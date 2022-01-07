@@ -1,7 +1,11 @@
 package model;
 
 public class Subtask extends Task {
-    Epic epic;
+    private Epic epic;
+
+    public void setEpic(Epic epic) {
+        this.epic = epic;
+    }
 
     public Epic getEpic() {
         return epic;

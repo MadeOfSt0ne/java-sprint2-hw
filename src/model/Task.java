@@ -1,20 +1,18 @@
 package model;
 
-import static model.Status.NEW;
-
 public class Task {
     private String name;
     private String description;
     protected Integer id;
-    private String status;
+    private Status status;
 
     public Task() {
-        this("", "", 0, NEW);
+        this("", "", 0, status.NEW);
     }
 
     // конструктор для создания задачи по названию и номеру
     public Task(String name, Integer id) {
-        this(name, "", id, NEW);
+        this(name, "", id, status.NEW);
     }
 
     // конструктор для создания задачи по названию, описанию и номеру
@@ -22,11 +20,11 @@ public class Task {
         this.name = name;
         this.description = description;
         this.id = id;
-        this.status = NEW;
+        this.status = status.NEW;
     }
 
     // конструктор для создания задачи по названию, описанию, номеру и статусу
-    public Task(String name, String description,Integer id, String status) {
+    public Task(String name, String description,Integer id, Status status) {
         this.name = name;
         this.description = description;
         this.id = id;
@@ -62,11 +60,28 @@ public class Task {
         return id;
     }
 
-    public String getStatus() {
+    public Status getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(Status status) {
         this.status = status;
+    }
+
+    @Override
+    public int hashCode() {
+        return id;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        Task task = (Task) obj;
+        return id == task.id.intValue();
     }
 }

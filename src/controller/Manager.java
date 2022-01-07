@@ -1,13 +1,12 @@
+package controller;
+
 import model.Epic;
+import model.Status;
 import model.Subtask;
 import model.Task;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-
-import static model.Status.NEW;
-import static model.Status.IN_PROGRESS;
-import static model.Status.DONE;
 
 public class Manager {
     HashMap<Integer, Task> tasks = new HashMap<>();
@@ -42,7 +41,7 @@ public class Manager {
     // создание новой задачи
     public Task createTask(Task task) {
         int id = ++taskId;
-        Task value = new Task(task.getName(), task.getDescription(), id, NEW);
+        Task value = new Task(task.getName(), task.getDescription(), id, Status.NEW);
         if (tasks.containsKey(task.getId())) {
             System.out.println("Такая задача уже есть: " + task.getId());
             return null;
@@ -56,7 +55,7 @@ public class Manager {
         int id = ++subtaskId;
         Subtask value = new Subtask();
         if (subtasks.containsKey(task.getId())) {
-            System.out.println("Такая задача уже есть: " + task.getId());
+            System.out.println("Такая подзадача уже есть: " + task.getId());
             return null;
         }
         if (!epics.containsKey(task.getEpic().getId())) {
@@ -69,16 +68,16 @@ public class Manager {
         return value;
     }
 
-    // создание нового эпика. если это измененный существующий, то перезаписываем
-    public Epic createEpic(Epic newEpic) {
+    // создание нового эпика
+    public Epic createEpic(Epic task) {
         int id = ++epicId;
-        Epic oldEpic = epics.get(newEpic.getId());
-        if (oldEpic == null) {
+        Epic value = new Epic();
+        if (epics.containsKey(task.getId())) {
+            System.out.println("Такой эпик уже есть: " + task.getId());
             return null;
         }
-        oldEpic.setName(newEpic.getName());
-        oldEpic.setDescription(newEpic.getDescription());
-        return oldEpic;
+        epics.put(task.getId(), value);
+        return value;
     }
 
     // обновление задачи
@@ -117,8 +116,16 @@ public class Manager {
     }
 
     // метод для вычисления статуса ... in_progress
-    private String findStatus(Integer epicId) {
-        return "status";
+    public Status findEpicStatus(Integer id) {
+        Epic epic = epics.get(id);
+        if (epic == null) {
+            System.out.println("Статус эпика - NEW");
+            return Status.NEW;
+        }
+
+
+        }
+        return Status.NEW;
     }
 
     // удаление по id
