@@ -7,12 +7,12 @@ public class Task {
     private Status status;
 
     public Task() {
-        this("", "", 0, status.NEW);
+        this("", "", 0, Status.NEW);
     }
 
     // конструктор для создания задачи по названию и номеру
     public Task(String name, Integer id) {
-        this(name, "", id, status.NEW);
+        this(name, "", id, Status.NEW);
     }
 
     // конструктор для создания задачи по названию, описанию и номеру
@@ -20,7 +20,7 @@ public class Task {
         this.name = name;
         this.description = description;
         this.id = id;
-        this.status = status.NEW;
+        this.status = Status.NEW;
     }
 
     // конструктор для создания задачи по названию, описанию, номеру и статусу
