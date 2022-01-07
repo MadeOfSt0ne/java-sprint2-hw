@@ -23,14 +23,15 @@ public class Manager {
     }
 
     // получение списка эпиков
-    public ArrayList<Task> findAllEpics() {
-        ArrayList<Task> allEpics = new ArrayList<>(epics.values());
+    public ArrayList<Epic> findAllEpics() {
+        ArrayList<Epic> allEpics = new ArrayList<>(epics.values());
         return allEpics;
     }
 
     // получение списка подзадач
-    public Epic findAllSubTasks(Integer epicId) {
-        return epics.get(epicId);
+    public ArrayList<Task> findAllSubtasks(Epic epic) {
+        ArrayList<Task> allSubtasks = epic.getSubtasks();
+        return allSubtasks;
     }
 
     // получение задачи по id
@@ -115,17 +116,37 @@ public class Manager {
         return savedEpic;
     }
 
-    // метод для вычисления статуса ... in_progress
-    public Status findEpicStatus(Integer id) {
-        Epic epic = epics.get(id);
-        if (epic == null) {
+    // метод для вычисления статуса
+    public Status findEpicStatus(Epic epic) {
+        findAllSubtasks(epic);
+        if (findAllSubtasks(epic) == null) {
             System.out.println("Статус эпика - NEW");
             return Status.NEW;
         }
-
-
+        int counterNew = 0;
+        int counterDone = 0;
+        int counterInProgress = 0;
+        for (Task task : findAllSubtasks(epic)) {
+            if (task.getStatus().equals(Status.NEW)) {
+                counterNew++;
+            } else if (task.getStatus().equals(Status.DONE)) {
+                counterDone++;
+            } else if (task.getStatus().equals(Status.IN_PROGRESS)) {
+                counterInProgress++;
+            }
         }
-        return Status.NEW;
+        if (counterInProgress > 0) {
+            System.out.println("Статус эпика - IN_PROGRESS");
+            return Status.IN_PROGRESS;
+        } else if (counterNew > 0 && counterDone ==0) {
+            System.out.println("Статус эпика - NEW");
+            return Status.NEW;
+        } else if (counterNew == 0 && counterDone > 0) {
+            System.out.println("Статус эпика - DONE");
+            return Status.DONE;
+        } else {
+            return Status.IN_PROGRESS;
+        }
     }
 
     // удаление по id
