@@ -8,7 +8,7 @@ import model.Task;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class Manager {
+public class InMemoryTasksManager implements TaskManager {
     HashMap<Integer, Task> tasks = new HashMap<>();
     int taskId = 0;
     HashMap<Integer, Subtask> subtasks = new HashMap<>();
@@ -17,29 +17,34 @@ public class Manager {
     int epicId = 0;
 
     // получение списка задач
+    @Override
     public ArrayList<Task> findAllTasks() {
         ArrayList<Task> allTasks = new ArrayList<>(tasks.values());
         return allTasks;
     }
 
     // получение списка эпиков
+    @Override
     public ArrayList<Epic> findAllEpics() {
         ArrayList<Epic> allEpics = new ArrayList<>(epics.values());
         return allEpics;
     }
 
     // получение списка подзадач
+    @Override
     public ArrayList<Task> findAllSubtasks(Epic epic) {
         ArrayList<Task> allSubtasks = epic.getSubtasks();
         return allSubtasks;
     }
 
     // получение задачи по id
+    @Override
     public Task findById(Integer id) {
         return tasks.get(id);
     }
 
     // создание новой задачи
+    @Override
     public Task createTask(Task task) {
         int id = ++taskId;
         Task value = new Task(task.getName(), task.getDescription(), id, Status.NEW);
@@ -52,6 +57,7 @@ public class Manager {
     }
 
     // создание новой подзадачи
+    @Override
     public Subtask createSubtask(Subtask task) {
         int id = ++subtaskId;
         Subtask value = new Subtask();
@@ -70,6 +76,7 @@ public class Manager {
     }
 
     // создание нового эпика
+    @Override
     public Epic createEpic(Epic task) {
         int id = ++epicId;
         Epic value = new Epic();
@@ -82,6 +89,7 @@ public class Manager {
     }
 
     // обновление задачи
+    @Override
     public Task updateTask(Task changedTask) {
         Task savedTask = tasks.get(changedTask.getId());
         if (savedTask == null) {
@@ -94,6 +102,7 @@ public class Manager {
     }
 
     // обновление подзадачи
+    @Override
     public Subtask updateSubtask(Subtask changedSubtask) {
         Subtask savedSubtask = subtasks.get(changedSubtask.getId());
         if (savedSubtask == null) {
@@ -106,6 +115,7 @@ public class Manager {
     }
 
     // обновление эпика
+    @Override
     public Epic updateEpic(Epic changedEpic) {
         Epic savedEpic = epics.get(changedEpic.getId());
         if (savedEpic == null) {
@@ -117,6 +127,7 @@ public class Manager {
     }
 
     // метод для вычисления статуса
+    @Override
     public Status findEpicStatus(Epic epic) {
         findAllSubtasks(epic);
         if (findAllSubtasks(epic) == null) {
@@ -150,27 +161,33 @@ public class Manager {
     }
 
     // удаление по id
+    @Override
     public Task deleteTask(Integer id) {
         return tasks.remove(id);
     }
 
+    @Override
     public Subtask deleteSubtask(Integer id) {
         return subtasks.remove(id);
     }
 
+    @Override
     public Epic deleteEpic(Integer id) {
         return epics.remove(id);
     }
 
     // очистка списка
+    @Override
     public void clearAllTasks() {
         tasks.clear();
     }
 
+    @Override
     public void clearAllSubtasks() {
         subtasks.clear();
     }
 
+    @Override
     public void clearAllEpics() {
         epics.clear();
     }
