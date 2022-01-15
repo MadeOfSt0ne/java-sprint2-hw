@@ -16,7 +16,7 @@ public class Task {
     }
 
     // конструктор для создания задачи по названию, описанию и номеру
-    public Task(String name, String description,Integer id) {
+    public Task(String name, String description, Integer id) {
         this.name = name;
         this.description = description;
         this.id = id;
@@ -83,5 +83,15 @@ public class Task {
         }
         Task task = (Task) obj;
         return id == task.id.intValue();
+    }
+
+    @Override
+    public String toString() {
+        return "Task{" +
+                "name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", id=" + id +
+                ", status=" + status +
+                '}';
     }
 }
