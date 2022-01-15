@@ -3,10 +3,9 @@ import model.Epic;
 
 public class Main {
     public static void main(String[] args) {
-    //Праздники закончились, пришло время практики!
+    // Тесты
         InMemoryTasksManager inMemoryTasksManager = new InMemoryTasksManager();
-        Epic epic = new Epic();
-        epic.setName("e1");
+        Epic epic = new Epic("epic 1", "descriprtion 1");
         inMemoryTasksManager.createEpic(epic);
         System.out.println(inMemoryTasksManager.findAllEpics());
 
