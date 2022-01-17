@@ -8,23 +8,29 @@ import model.Task;
 import java.util.List;
 
 public interface TaskManager {
-    // Вопрос: комментарии, описывающие методы, лучше перенести в интерфейс или оставить в классе,
-    // который реализует этот интерфейс(InMemoryTaskManager)?
-    // получение списка всех задач, подзадач, эпиков
+    // получение списка задач
     List<Task> findAllTasks();
+    // получение списка эпиков
     List<Epic> findAllEpics();
+    // получение списка подзадач
     List<Task> findAllSubtasks(Epic epic);
-    // нахождение по id
+    // получение задачи по id
     Task findTaskById(Integer id);
+    // получение подзадачи по id
     Subtask findSubtaskById(Integer id);
+    // получение эпика по id
     Epic findEpicById(Integer id);
-    // создание
+    // создание новой задачи
     Task createTask(Task task);
+    // создание новой подзадачи
     Subtask createSubtask(Subtask task);
+    // создание нового эпика
     Epic createEpic(Epic task);
-    // обновление
+    // обновление задачи
     Task updateTask(Task changedTask);
+    // обновление подзадачи
     Subtask updateSubtask(Subtask changedSubtask);
+    // обновление эпика
     Epic updateEpic(Epic changedEpic);
     // вычисление статуса
     Status findEpicStatus(Epic epic);
@@ -36,6 +42,6 @@ public interface TaskManager {
     void clearAllTasks();
     void clearAllSubtasks();
     void clearAllEpics();
-    // получение истории
+    // получение истории просмотров эпиков и подзадач
     List<Task> history();
 }

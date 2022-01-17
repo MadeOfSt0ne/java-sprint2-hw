@@ -230,7 +230,7 @@ public class InMemoryTasksManager implements TaskManager {
         epics.clear();
     }
 
-    // метод для получения истории
+    // получение истории просмотров эпиков и подзадач
     @Override
     public List<Task> history() {
         return history;
