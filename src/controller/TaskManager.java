@@ -42,6 +42,4 @@ public interface TaskManager {
     void clearAllTasks();
     void clearAllSubtasks();
     void clearAllEpics();
-    // получение истории просмотров эпиков и подзадач
-    List<Task> history();
 }

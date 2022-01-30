@@ -1,3 +1,4 @@
+import controller.InMemoryHistoryManager;
 import controller.InMemoryTasksManager;
 import model.Epic;
 import model.Status;
@@ -8,6 +9,7 @@ public class Main {
     public static void main(String[] args) {
     // Тесты
         InMemoryTasksManager inMemoryTasksManager = new InMemoryTasksManager();
+        InMemoryHistoryManager inMemoryHistoryManager = new InMemoryHistoryManager();
         Task task = new Task("task 1", 1);
         inMemoryTasksManager.createTask(task);
         Epic epic = new Epic("epic 1", "description 1", 11, Status.NEW);
@@ -60,6 +62,6 @@ public class Main {
         inMemoryTasksManager.findSubtaskById(28);
         inMemoryTasksManager.findSubtaskById(29);
         // первый поиск - поиск эпика на строке 21 не отображается в истории
-        System.out.println("История просмотров: " + inMemoryTasksManager.history());
+        System.out.println("История просмотров: " + inMemoryHistoryManager.getHistory());
     }
 }

@@ -17,7 +17,7 @@ public class InMemoryTasksManager implements TaskManager {
     int subtaskId = 0;
     HashMap<Integer, Epic> epics = new HashMap<>();
     int epicId = 0;
-    List<Task> history = new LinkedList<>();
+    InMemoryHistoryManager inMemoryHistoryManager = new InMemoryHistoryManager();
 
     // получение списка задач
     @Override
@@ -52,10 +52,7 @@ public class InMemoryTasksManager implements TaskManager {
         if (subtask == null) {
             return null;
         }
-        if (history.size() == 10) {
-            history.remove(0);
-        }
-        history.add(subtask);
+        inMemoryHistoryManager.add(subtask);
         return subtask;
     }
 
@@ -66,10 +63,7 @@ public class InMemoryTasksManager implements TaskManager {
         if (epic == null) {
             return null;
         }
-        if (history.size() == 10) {
-            history.remove(0);
-        }
-        history.add(epic);
+        inMemoryHistoryManager.add(epic);
         return epic;
     }
 
@@ -230,9 +224,4 @@ public class InMemoryTasksManager implements TaskManager {
         epics.clear();
     }
 
-    // получение истории просмотров эпиков и подзадач
-    @Override
-    public List<Task> history() {
-        return history;
-    }
 }
