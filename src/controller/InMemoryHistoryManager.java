@@ -8,21 +8,20 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class InMemoryHistoryManager implements HistoryManager {
-    HashMap<Integer, Node> nodeMap = new HashMap<>();
-    List<Task> history = new DoubleLinkedList<>();
-
-    public void removeNode(Integer id) {
-        nodeMap.remove(id);
+    public InMemoryHistoryManager() {
     }
+
+    HashMap<Integer, Node> nodeMap = new HashMap<>();
+    Node first = null;
+    Node last = null;
 
     // добавляем задачу в историю просмотров
     @Override
     public void add(Task task) {
-        if (nodeMap.containsKey(task.getId())) {
-            removeNode(task.getId());
-        } else {
-            history.add(task);
+        if (task == null) {
+            return;
         }
+        linkLast(task);
     }
 
     // удаляем задачу из истории просмотров
@@ -36,28 +35,40 @@ public class InMemoryHistoryManager implements HistoryManager {
         }
     }
 
-    // получаем историю просмотров
-    @Override
-    public List<Task> getHistory() {
-        return null;
-    }
-
-    public class DoubleLinkedList<Task> extends LinkedList<Task> {
-        private Node first;
-        private Node last;
-
-        public void linkLast(Task task) {
-            Node l = last;
-            Node newNode = new Node(l, (model.Task) task, null);
-            if (l == null) {
-                first = newNode;
+    // добавление элемента на последнее место
+    public void linkLast(Task task) {
+        final Node oldNode = nodeMap.remove(task.getId());
+        if (oldNode != null) {
+            if (oldNode == first) {
+                first = oldNode.next;
+                last = first;
+            } else if (oldNode == last) {
+                last = oldNode.next;
+                last.next = null;
             } else {
-                l.next = newNode;
+                oldNode.prev.next = oldNode.next;
             }
         }
-
-        public List<Task> getTasks(DoubleLinkedList list) {
-            return new ArrayList<>(history);
+        final Node newNode = new Node(task);
+        if (first == null) {
+            first = newNode;
+        } else {
+            last.next = newNode;
+            newNode.prev = last;
         }
+        last = newNode;
+        nodeMap.put(task.getId(), newNode);
+    }
+
+    @Override
+    public List<Task> getHistory() {
+        final ArrayList<Task> tasks = new ArrayList<>();
+        Node current = first;
+        while (current != null) {
+            tasks.add(current.task);
+            current = current.next;
+        }
+        return tasks;
     }
 }
+

@@ -35,11 +35,13 @@ public interface TaskManager {
     // вычисление статуса
     Status findEpicStatus(Epic epic);
     // удаление по id
-    Task deleteTask(Integer id);
-    Subtask deleteSubtask(Integer id);
-    Epic deleteEpic(Integer id);
+    void deleteTask(Integer id);
+    void deleteSubtask(Integer id);
+    void deleteEpic(Integer id);
     // очистка списка
     void clearAllTasks();
     void clearAllSubtasks();
     void clearAllEpics();
+    // получение истории просмотров
+    List<Task> history();
 }
