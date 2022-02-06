@@ -58,10 +58,11 @@ public class Main {
         inMemoryTasksManager.findSubtaskById(25);
         inMemoryTasksManager.findSubtaskById(26);
         inMemoryTasksManager.findEpicById(13);
-        inMemoryTasksManager.findSubtaskById(27);
+        inMemoryTasksManager.findEpicById(12);
+        inMemoryTasksManager.findSubtaskById(24);
         inMemoryTasksManager.findSubtaskById(28);
         inMemoryTasksManager.findSubtaskById(29);
         // первый поиск - поиск эпика на строке 21 не отображается в истории
-        System.out.println("История просмотров: " + inMemoryHistoryManager.getHistory());
+        System.out.println("История просмотров: " + inMemoryTasksManager.history());
     }
 }

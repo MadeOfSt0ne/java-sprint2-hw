@@ -41,9 +41,9 @@ public class InMemoryHistoryManager implements HistoryManager {
         if (oldNode != null) {
             if (oldNode == first) {
                 first = oldNode.next;
-                last = first;
+                last = last.prev;
             } else if (oldNode == last) {
-                last = oldNode.next;
+                last = oldNode.prev;
                 last.next = null;
             } else {
                 oldNode.prev.next = oldNode.next;
