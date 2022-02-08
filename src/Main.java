@@ -62,7 +62,11 @@ public class Main {
         inMemoryTasksManager.findSubtaskById(24);
         inMemoryTasksManager.findSubtaskById(28);
         inMemoryTasksManager.findSubtaskById(29);
-        // первый поиск - поиск эпика на строке 21 не отображается в истории
+        // история просмтров без повторов
+        System.out.println("История просмотров: " + inMemoryTasksManager.history());
+        // удаляем сабтаск и эпик из истории просмотров
+        inMemoryHistoryManager.remove(25);
+        inMemoryHistoryManager.remove(13);
         System.out.println("История просмотров: " + inMemoryTasksManager.history());
     }
 }

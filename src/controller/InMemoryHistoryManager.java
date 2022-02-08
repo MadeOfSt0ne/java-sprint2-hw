@@ -2,10 +2,7 @@ package controller;
 
 import model.Task;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public class InMemoryHistoryManager implements HistoryManager {
     public InMemoryHistoryManager() {
@@ -21,23 +18,27 @@ public class InMemoryHistoryManager implements HistoryManager {
         if (task == null) {
             return;
         }
+
+        if (nodeMap.containsKey(task.getId())) {
+            remove(task.getId());
+        }
         linkLast(task);
     }
 
     // удаляем задачу из истории просмотров
     @Override
     public void remove(int id) {
-        if (!nodeMap.containsKey(id)) {
-            System.out.println("Ключ не найден = " + id);
-        } else {
-            nodeMap.remove(id);
-            System.out.println("Просмотр удален: " + id);
-        }
+        removeNode(nodeMap.get(id));
     }
 
-    // добавление элемента на последнее место
-    public void linkLast(Task task) {
-        final Node oldNode = nodeMap.remove(task.getId());
+    void removeNode(Node node) {
+        Integer key = null;
+        for (Map.Entry<Integer, Node> pair : nodeMap.entrySet()) {
+            if (node.equals(pair.getValue())) {
+                key = pair.getKey();
+            }
+        }
+        final Node oldNode = nodeMap.remove(key);
         if (oldNode != null) {
             if (oldNode == first) {
                 first = oldNode.next;
@@ -49,6 +50,10 @@ public class InMemoryHistoryManager implements HistoryManager {
                 oldNode.prev.next = oldNode.next;
             }
         }
+    }
+
+    // добавление элемента на последнее место
+    public void linkLast(Task task) {
         final Node newNode = new Node(task);
         if (first == null) {
             first = newNode;
