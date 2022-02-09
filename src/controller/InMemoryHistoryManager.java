@@ -5,8 +5,6 @@ import model.Task;
 import java.util.*;
 
 public class InMemoryHistoryManager implements HistoryManager {
-    public InMemoryHistoryManager() {
-    }
 
     HashMap<Integer, Node> nodeMap = new HashMap<>();
     Node first = null;
@@ -28,7 +26,6 @@ public class InMemoryHistoryManager implements HistoryManager {
     @Override
     public void remove(Integer id) {
         removeNode(nodeMap.get(id));
-
     }
 
     // удаление узла
@@ -46,7 +43,6 @@ public class InMemoryHistoryManager implements HistoryManager {
                 node.next.prev = null;
                 node.next = null;
             }
-
         }
     }
 
