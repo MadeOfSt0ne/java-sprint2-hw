@@ -8,7 +8,7 @@ public interface HistoryManager {
     // добавляем задачу в историю просмотров
     void add(Task task);
     // удаляем задачу из истории просмотров
-    void remove(int id);
+    void remove(Integer id);
     // получаем историю просмотров
     List<Task> getHistory();
 }

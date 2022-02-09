@@ -234,6 +234,7 @@ public class InMemoryTasksManager implements TaskManager {
         epics.clear();
     }
 
+    // получение истории просмотров
     @Override
     public List<Task> history() {
         return history.getHistory();

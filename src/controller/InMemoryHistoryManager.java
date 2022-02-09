@@ -18,7 +18,6 @@ public class InMemoryHistoryManager implements HistoryManager {
         if (task == null) {
             return;
         }
-
         if (nodeMap.containsKey(task.getId())) {
             remove(task.getId());
         }
@@ -27,27 +26,48 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     // удаляем задачу из истории просмотров
     @Override
-    public void remove(int id) {
+    public void remove(Integer id) {
         removeNode(nodeMap.get(id));
     }
 
-    void removeNode(Node node) {
-        Integer key = null;
-        for (Map.Entry<Integer, Node> pair : nodeMap.entrySet()) {
-            if (node.equals(pair.getValue())) {
-                key = pair.getKey();
+    // удаление узла
+    public void removeNode(Node node) {
+        if (node != null) {
+            if (node.prev == null) {
+                first = node.next;
+            } else {
+                node.prev.next = node.next;
+                node.prev = null;
+            }
+            if (node.next == null) {
+                last = null;
+            } else {
+                node.next.prev = null;
+                node.next = null;
             }
         }
-        final Node oldNode = nodeMap.remove(key);
-        if (oldNode != null) {
-            if (oldNode == first) {
-                first = oldNode.next;
+    }
+
+    // второй метод удаления узла, пока что не работает
+    public void removeNode1(Node node) {
+        if (node != null) {
+            if (node == first) {
+                if (node != last) {
+                    first.prev = null;
+                } else {
+                    last = null;
+                }
+                first = node.next;
+                node.next = null;
+            } else if (node == last) {
+                node.prev.next = null;
+                node.prev = null;
                 last = last.prev;
-            } else if (oldNode == last) {
-                last = oldNode.prev;
-                last.next = null;
             } else {
-                oldNode.prev.next = oldNode.next;
+                node.prev.next = node.next;  // NPE
+                node.next.prev = node.prev;  // NPE
+                node.prev = null;
+                node.next = null;
             }
         }
     }
@@ -55,7 +75,7 @@ public class InMemoryHistoryManager implements HistoryManager {
     // добавление элемента на последнее место
     public void linkLast(Task task) {
         final Node newNode = new Node(task);
-        if (first == null) {
+        if (last == null) {
             first = newNode;
         } else {
             last.next = newNode;
@@ -65,9 +85,10 @@ public class InMemoryHistoryManager implements HistoryManager {
         nodeMap.put(task.getId(), newNode);
     }
 
+    // получение истории просмотров
     @Override
     public List<Task> getHistory() {
-        final ArrayList<Task> tasks = new ArrayList<>();
+        ArrayList<Task> tasks = new ArrayList<>();
         Node current = first;
         while (current != null) {
             tasks.add(current.task);

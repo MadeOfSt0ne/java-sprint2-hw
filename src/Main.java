@@ -18,7 +18,7 @@ public class Main {
         Subtask subtask2 = new Subtask("subtask 2", "description 2", 22, Status.NEW, 11);
         inMemoryTasksManager.createSubtask(subtask);
         inMemoryTasksManager.createSubtask(subtask2);
-        // проверка поиска + 3 поиска в историю просмотров(эпик, саб, саб)
+        // проверка поиска
         System.out.println("Новая задача: " + inMemoryTasksManager.findTaskById(1));
         System.out.println("Новый эпик: " + inMemoryTasksManager.findEpicById(11));
         System.out.println("Новая подзадача: " + inMemoryTasksManager.findSubtaskById(21));
@@ -39,7 +39,7 @@ public class Main {
         inMemoryTasksManager.findEpicStatus(epic);
         // поиск всех подзадач
         System.out.println("Все подзадачи: " + inMemoryTasksManager.findAllSubtasks(epic));
-        // история просмотров
+        // создание эпиков и сабтасков
         inMemoryTasksManager.createSubtask(new Subtask("subtask 3", "d 3", 23, Status.IN_PROGRESS, 11));
         inMemoryTasksManager.createSubtask(new Subtask("subtask 4", "d 4", 24, Status.IN_PROGRESS, 11));
         inMemoryTasksManager.createEpic(new Epic("epic 2", "ddd", 12, Status.NEW));
@@ -52,21 +52,23 @@ public class Main {
         inMemoryTasksManager.createSubtask(new Subtask("subtask 10", "d 10", 30, Status.DONE, 13));
         inMemoryTasksManager.createSubtask(new Subtask("subtask 11", "d 11", 31, Status.NEW, 13));
         inMemoryTasksManager.createSubtask(new Subtask("subtask 12", "d 12", 32, Status.DONE, 13));
-        // 8 поисков в историю просмотров
+        // добавляем просмотры
         inMemoryTasksManager.findEpicById(12);
         inMemoryTasksManager.findSubtaskById(24);
         inMemoryTasksManager.findSubtaskById(25);
         inMemoryTasksManager.findSubtaskById(26);
         inMemoryTasksManager.findEpicById(13);
-        inMemoryTasksManager.findEpicById(12);
-        inMemoryTasksManager.findSubtaskById(24);
+        inMemoryTasksManager.findEpicById(12);     // повторный просмотр эпика
+        inMemoryTasksManager.findSubtaskById(24);  // повторный просмотр сабтаска
         inMemoryTasksManager.findSubtaskById(28);
         inMemoryTasksManager.findSubtaskById(29);
-        // история просмтров без повторов
+        // первая история
         System.out.println("История просмотров: " + inMemoryTasksManager.history());
-        // удаляем сабтаск и эпик из истории просмотров
-        inMemoryHistoryManager.remove(25);
-        inMemoryHistoryManager.remove(13);
+        // удаление эпика2
+        inMemoryTasksManager.deleteEpic(12);
+        // эпик удален, результат поиска: null
+        System.out.println(inMemoryTasksManager.findEpicById(12));
+        // история после удаления
         System.out.println("История просмотров: " + inMemoryTasksManager.history());
     }
 }
