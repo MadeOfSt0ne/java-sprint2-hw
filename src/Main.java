@@ -62,13 +62,7 @@ public class Main {
         inMemoryTasksManager.findSubtaskById(24);  // повторный просмотр сабтаска
         inMemoryTasksManager.findSubtaskById(28);
         inMemoryTasksManager.findSubtaskById(29);
-        // первая история
-        System.out.println("История просмотров: " + inMemoryTasksManager.history());
-        // удаление эпика2
-        inMemoryTasksManager.deleteEpic(12);
-        // эпик удален, результат поиска: null
-        System.out.println(inMemoryTasksManager.findEpicById(12));
-        // история после удаления
+        // история без дублей
         System.out.println("История просмотров: " + inMemoryTasksManager.history());
     }
 }

@@ -28,6 +28,7 @@ public class InMemoryHistoryManager implements HistoryManager {
     @Override
     public void remove(Integer id) {
         removeNode(nodeMap.get(id));
+
     }
 
     // удаление узла
@@ -45,6 +46,7 @@ public class InMemoryHistoryManager implements HistoryManager {
                 node.next.prev = null;
                 node.next = null;
             }
+
         }
     }
 
