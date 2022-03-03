@@ -18,6 +18,10 @@ public class FileBackedTasksManager extends InMemoryTasksManager implements Task
 
    }
 
+   public FileBackedTasksManager loadFromFile(File file) {
+
+   }
+
    public String toString(Task task) {
 
    }
