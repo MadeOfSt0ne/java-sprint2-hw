@@ -5,6 +5,7 @@ public class Task {
     private String description;
     protected Integer id;
     private Status status;
+    private TaskType taskType;
 
     public Task() {
         this("", "", 0, Status.NEW);
@@ -37,6 +38,10 @@ public class Task {
         this.description = task.description;
         this.id = task.id;
         this.status = task.status;
+    }
+
+    public TaskType getTaskType() {
+        return taskType;
     }
 
     public String getName() {

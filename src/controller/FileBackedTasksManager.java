@@ -1,8 +1,6 @@
 package controller;
 
-import model.Epic;
-import model.Subtask;
-import model.Task;
+import model.*;
 
 import java.io.File;
 import java.util.List;
@@ -22,8 +20,8 @@ public class FileBackedTasksManager extends InMemoryTasksManager implements Task
 
    }
 
-   public String toString(Task task) {
-
+   private String toString(Task task) {
+        return String.format("%s, %s, %s, %s", task.getTaskType(), task.getName(), task.getStatus(), task.getDescription());
    }
 
    public Task fromString(String value) {
