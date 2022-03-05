@@ -63,20 +63,8 @@ public class FileBackedTasksManager extends InMemoryTasksManager {
     public static FileBackedTasksManager loadFromFile(File file) throws IOException {
         FileBackedTasksManager manager = new FileBackedTasksManager(file);
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-            while (br.ready()) {
-                manager.save();
-            }
-        } catch (IOException e) {
-            throw new IOException(e.getMessage());
-        }
-        return manager;
-    }
-
-    // метод для загрузки менеджера из файла
-    public static FileBackedTasksManager loadFromFile1(File file) throws IOException {
-        FileBackedTasksManager manager = new FileBackedTasksManager(file);
-        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-            while (br.ready()) {
+            String line;
+            while ((line = br.readLine()) != null) {
                 manager.save();
             }
         } catch (IOException e) {

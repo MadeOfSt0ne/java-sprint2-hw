@@ -88,6 +88,6 @@ public class Main {
         manager.findEpicById(333);
         manager.findTaskById(111);
 
-        manager.loadFromFile(file);
+
     }
 }
