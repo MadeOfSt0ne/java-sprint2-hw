@@ -5,6 +5,7 @@ import model.Status;
 import model.Subtask;
 import model.Task;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface TaskManager {
@@ -17,7 +18,7 @@ public interface TaskManager {
     // получение задачи по id
     Task findTaskById(Integer id);
     // получение подзадачи по id
-    Subtask findSubtaskById(Integer id);
+    Subtask findSubtaskById(Integer id) throws IOException;
     // получение эпика по id
     Epic findEpicById(Integer id);
     // создание новой задачи

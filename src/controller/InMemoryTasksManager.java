@@ -2,17 +2,15 @@ package controller;
 
 import model.*;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 public class InMemoryTasksManager implements TaskManager {
     HashMap<Integer, Task> tasks = new HashMap<>();
-    int taskId = 0;
     HashMap<Integer, Subtask> subtasks = new HashMap<>();
-    int subtaskId = 0;
     HashMap<Integer, Epic> epics = new HashMap<>();
-    int epicId = 0;
     HistoryManager history = new InMemoryHistoryManager();
 
     // получение списка задач
@@ -64,8 +62,7 @@ public class InMemoryTasksManager implements TaskManager {
     // создание новой задачи
     @Override
     public Task createTask(Task task) {
-        int id = ++taskId;
-        Task value = new Task(task.getName(), task.getDescription(), id, task.getStatus());
+        Task value = new Task(task.getName(), task.getDescription(), task.getId(), task.getStatus());
         if (tasks.containsKey(task.getId())) {
             System.out.println("Такая задача уже есть: " + task.getId());
             return null;
@@ -85,8 +82,7 @@ public class InMemoryTasksManager implements TaskManager {
             System.out.println("Эпик не найден: " + (task.getEpicId()));
             return null;
         }
-        int id = ++subtaskId;
-        Subtask value = new Subtask(task.getName(), task.getDescription(), id, task.getStatus(), task.getEpicId());
+        Subtask value = new Subtask(task.getName(), task.getDescription(), task.getId(), task.getStatus(), task.getEpicId());
         subtasks.put(task.getId(), value);
         Epic epic = epics.get(task.getEpicId());
         epic.addSubtask(task);
@@ -96,8 +92,7 @@ public class InMemoryTasksManager implements TaskManager {
     // создание нового эпика
     @Override
     public Epic createEpic(Epic epic) {
-        int id = ++epicId;
-        Epic value = new Epic(epic.getName(), epic.getDescription(), id, epic.getStatus());
+        Epic value = new Epic(epic.getName(), epic.getDescription(), epic.getId(), epic.getStatus());
         if (epics.containsKey(epic.getId())) {
             System.out.println("Такой эпик уже есть: " + epic.getId());
             return null;

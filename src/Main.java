@@ -1,3 +1,4 @@
+import controller.FileBackedTasksManager;
 import controller.InMemoryHistoryManager;
 import controller.InMemoryTasksManager;
 import model.Epic;
@@ -5,10 +6,14 @@ import model.Status;
 import model.Subtask;
 import model.Task;
 
+import java.io.File;
+import java.io.IOException;
+
 public class Main {
-    public static void main(String[] args) {
-    // Тесты
-        InMemoryTasksManager inMemoryTasksManager = new InMemoryTasksManager();
+    public static void main(String[] args) throws IOException {
+    // Добрый день! Тесты для последнего задания находятся ниже - старые тесты не стал удалять.
+
+    /*    InMemoryTasksManager inMemoryTasksManager = new InMemoryTasksManager();
         InMemoryHistoryManager inMemoryHistoryManager = new InMemoryHistoryManager();
         Task task = new Task("task 1", 1);
         inMemoryTasksManager.createTask(task);
@@ -64,5 +69,25 @@ public class Main {
         inMemoryTasksManager.findSubtaskById(29);
         // история без дублей
         System.out.println("История просмотров: " + inMemoryTasksManager.history());
+        */
+
+        FileBackedTasksManager manager = new FileBackedTasksManager();
+        File file = new File("history1.csv");
+        // создание задач
+        manager.createTask(new Task("task", "task111", 111, Status.NEW));
+        manager.createEpic(new Epic("epic", "epic333", 333, Status.NEW));
+        manager.createSubtask(new Subtask("subtask", "subtask222", 222, Status.IN_PROGRESS, 333));
+        // считывание из файла в строку
+        System.out.print("Содержимое csv файла: ");
+        System.out.println(manager.fromFile("history.csv"));
+        // передаем строку и получаем задачу в более понятном виде
+        System.out.print("Найденная подзадача: ");
+        System.out.println(manager.fromString("222,SUBTASK,subtask"));
+        // поиск по id и добавление id в файл
+        manager.findSubtaskById(222);
+        manager.findEpicById(333);
+        manager.findTaskById(111);
+
+        manager.loadFromFile(file);
     }
 }

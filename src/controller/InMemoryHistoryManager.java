@@ -86,7 +86,7 @@ public class InMemoryHistoryManager implements HistoryManager {
     // получение истории просмотров
     @Override
     public List<Task> getHistory() {
-        ArrayList<Task> tasks = new ArrayList<>();
+        final ArrayList<Task> tasks = new ArrayList<>();
         Node current = first;
         while (current != null) {
             tasks.add(current.task);

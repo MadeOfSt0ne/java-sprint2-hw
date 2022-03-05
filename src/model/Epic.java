@@ -3,6 +3,7 @@ package model;
 import java.util.ArrayList;
 
 public class Epic extends Task {
+    private TaskType taskType;
     private ArrayList<Task> subtasks = new ArrayList<>();
 
     public Epic(String name, String description, Integer id, Status status) {
@@ -23,6 +24,11 @@ public class Epic extends Task {
 
     public void setSubtasks(ArrayList<Task> subtasks) {
         this.subtasks = subtasks;
+    }
+
+    @Override
+    public TaskType getTaskType() {
+        return taskType.EPIC;
     }
 
     @Override

@@ -41,7 +41,7 @@ public class Task {
     }
 
     public TaskType getTaskType() {
-        return taskType;
+        return taskType.TASK;
     }
 
     public String getName() {

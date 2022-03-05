@@ -2,6 +2,7 @@ package model;
 
 public class Subtask extends Task {
     private Integer epicId;
+    private TaskType taskType;
 
     public Subtask(Integer epicId) {
         this.epicId = epicId;
@@ -16,8 +17,14 @@ public class Subtask extends Task {
         return epicId;
     }
 
+    // может пригодиться для переноса сабтаска от одного эпика к другому
     public void setEpicId(Integer epicId) {
         this.epicId = epicId;
+    }
+
+    @Override
+    public TaskType getTaskType() {
+        return taskType.SUBTASK;
     }
 
     @Override
