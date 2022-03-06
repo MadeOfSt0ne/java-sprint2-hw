@@ -26,10 +26,11 @@ public class InMemoryHistoryManager implements HistoryManager {
     @Override
     public void remove(Integer id) {
         removeNode(nodeMap.get(id));
+        nodeMap.remove(id);
     }
 
     // удаление узла
-    public void removeNode(Node node) {
+    public void removeNode1(Node node) {
         if (node != null) {
             if (node.prev == null) {
                 first = node.next;
@@ -46,10 +47,9 @@ public class InMemoryHistoryManager implements HistoryManager {
         }
     }
 
-    // второй метод удаления узла, пока что не работает
-    public void removeNode1(Node node) {
-        if (node != null) {
-            if (node == first) {
+    // второй метод удаления узла, работает лучше первого
+    public void removeNode(Node node) {
+        if (node == first) {
                 if (node != last) {
                     first.prev = null;
                 } else {
@@ -67,7 +67,6 @@ public class InMemoryHistoryManager implements HistoryManager {
                 node.prev = null;
                 node.next = null;
             }
-        }
     }
 
     // добавление элемента на последнее место
@@ -86,7 +85,11 @@ public class InMemoryHistoryManager implements HistoryManager {
     // получение истории просмотров
     @Override
     public List<Integer> getHistory() {
-        final ArrayList<Integer> tasks = new ArrayList<>();
+        return getTasks();
+    }
+
+    public List<Integer> getTasks() {
+        final List<Integer> tasks = new ArrayList<>();
         Node current = first;
         while (current != null) {
             tasks.add(current.task.getId());

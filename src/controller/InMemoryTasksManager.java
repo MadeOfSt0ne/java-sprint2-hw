@@ -11,7 +11,7 @@ public class InMemoryTasksManager implements TaskManager {
     HashMap<Integer, Task> tasks = new HashMap<>();
     HashMap<Integer, Subtask> subtasks = new HashMap<>();
     HashMap<Integer, Epic> epics = new HashMap<>();
-    HistoryManager history = new InMemoryHistoryManager();
+    InMemoryHistoryManager history = new InMemoryHistoryManager();
 
     // получение списка задач
     @Override

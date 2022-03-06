@@ -91,7 +91,7 @@ public class Main {
         inMemoryTasksManager.findTaskById(1);
         inMemoryTasksManager.findSubtaskById(21);
         inMemoryTasksManager.findSubtaskById(22);
-        manager.toString(inMemoryHistoryManager);
+        System.out.println("история "+ manager.history());
 
     }
 }

@@ -13,7 +13,8 @@ public class FileBackedTasksManager extends InMemoryTasksManager {
     public FileBackedTasksManager(File file) {
        this.file = file;
     }
-    HistoryManager history = new InMemoryHistoryManager();
+    //HistoryManager history = new InMemoryHistoryManager();
+    InMemoryTasksManager tasksManager = new InMemoryTasksManager();
     public FileBackedTasksManager() {
 
     }
@@ -67,7 +68,7 @@ public class FileBackedTasksManager extends InMemoryTasksManager {
                 }
             }
             sb.append("\n");
-            sb.append(toString(history));
+            sb.append(toString(tasksManager));
             writer.write(sb.toString());
         } catch (FileNotFoundException ex) {
             ex.printStackTrace();
@@ -75,16 +76,13 @@ public class FileBackedTasksManager extends InMemoryTasksManager {
     }
 
     // метод для сохранения истории в csv
-    public static String toString(HistoryManager manager) {
-        StringBuilder sb = new StringBuilder();
-        for (Integer taskId : manager.getHistory()) {
-            String qq = String.valueOf(taskId);
-            sb.append(qq);
-            sb.append("\n");
+    public String toString(InMemoryTasksManager manager) {
+        String start = "History: ";
+        StringBuilder sb = new StringBuilder(start);
+        for (Integer id : manager.history()) {
+            sb.append(id + ",");
         }
-        String asS = sb.toString();
-        System.out.println("вот: " + asS);
-        return asS;
+        return sb.toString();
     }
 
     // метод добавляет id просмотренных задач в файл
@@ -152,42 +150,42 @@ public class FileBackedTasksManager extends InMemoryTasksManager {
     public Task findTaskById(Integer id) {
       super.findTaskById(id);
       save2();
-      return tasks.get(id);
+      return null;
     }
 
     @Override
     public Subtask findSubtaskById(Integer id) {
       super.findSubtaskById(id);
       save2();
-      return subtasks.get(id);
+      return null;
     }
 
     @Override
     public Epic findEpicById(Integer id) {
       super.findEpicById(id);
       save2();
-      return epics.get(id);
+      return null;
     }
 
     @Override
     public Task createTask(Task task) {
       super.createTask(task);
       save2();
-      return task;
+      return null;
     }
 
     @Override
     public Subtask createSubtask(Subtask task) {
       super.createSubtask(task);
       save2();
-      return task;
+      return null;
     }
 
     @Override
     public Epic createEpic(Epic epic) {
       super.createEpic(epic);
       save2();
-      return epic;
+      return null;
     }
 
 
