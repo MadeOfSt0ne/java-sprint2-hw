@@ -12,14 +12,14 @@ public class FileBackedTasksManager extends InMemoryTasksManager {
 
     public FileBackedTasksManager(File file) {
        this.file = file;
-   }
-
+    }
+    HistoryManager history = new InMemoryHistoryManager();
     public FileBackedTasksManager() {
 
     }
 
-    // метод записи в файл
-    public void save() {
+    // громоздкий, но рабочий метод для сохранения задач в файл csv
+    public void save1() {
         try {
             StringBuilder tasksToSave = new StringBuilder();
             tasksToSave.append("id,type,name,status,description");
@@ -39,7 +39,7 @@ public class FileBackedTasksManager extends InMemoryTasksManager {
             }
             tasksToSave.append("\n");
 
-            try (FileWriter writer = new FileWriter("history.csv")) {
+            try (FileWriter writer = new FileWriter("history1.csv")) {
                 writer.write(String.valueOf(tasksToSave));
             } catch (IOException e) {
                 throw new ManagerSaveException("ошибка ввода/вывода: " + e.getMessage());
@@ -49,7 +49,46 @@ public class FileBackedTasksManager extends InMemoryTasksManager {
         }
     }
 
+    // этот метод тоже работает
+    public void save2() {
+        try (PrintWriter writer = new PrintWriter("history2.csv")) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("id,type,name,status,description,epic\r\n");
+            for (Task task : findAllTasks()) {
+                sb.append(asString(task));
+                sb.append("\n");
+            }
+            for (Epic epic : findAllEpics()) {
+                sb.append(asString(epic));
+                sb.append("\n");
+                for (Task subtask : findAllSubtasks(epic)) {
+                    sb.append(asString(subtask));
+                    sb.append("\n");
+                }
+            }
+            sb.append("\n");
+            sb.append(toString(history));
+            writer.write(sb.toString());
+        } catch (FileNotFoundException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    // метод для сохранения истории в csv
+    public static String toString(HistoryManager manager) {
+        StringBuilder sb = new StringBuilder();
+        for (Integer taskId : manager.getHistory()) {
+            String qq = String.valueOf(taskId);
+            sb.append(qq);
+            sb.append("\n");
+        }
+        String asS = sb.toString();
+        System.out.println("вот: " + asS);
+        return asS;
+    }
+
     // метод добавляет id просмотренных задач в файл
+    // в ТЗ про такой метод ничего нет, но раз уж он написан и работает, то пусть остается
     public void saveId(Integer id) throws ManagerSaveException {
         try (FileWriter writer = new FileWriter("history.csv", true)) {
              writer.write(String.valueOf(id));
@@ -60,15 +99,15 @@ public class FileBackedTasksManager extends InMemoryTasksManager {
     }
 
     // метод для загрузки менеджера из файла
-    public static FileBackedTasksManager loadFromFile(File file) throws IOException {
+    public static FileBackedTasksManager loadFromFile(File file) throws ManagerSaveException {
         FileBackedTasksManager manager = new FileBackedTasksManager(file);
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             String line;
             while ((line = br.readLine()) != null) {
-                manager.save();
+                manager.save2();
             }
         } catch (IOException e) {
-            throw new IOException(e.getMessage());
+            throw new ManagerSaveException(e.getMessage());
         }
         return manager;
     }
@@ -112,54 +151,42 @@ public class FileBackedTasksManager extends InMemoryTasksManager {
     @Override
     public Task findTaskById(Integer id) {
       super.findTaskById(id);
-        try {
-            saveId(id);
-        } catch (ManagerSaveException e) {
-            e.printStackTrace();
-        }
-        return tasks.get(id);
+      save2();
+      return tasks.get(id);
     }
 
     @Override
     public Subtask findSubtaskById(Integer id) {
       super.findSubtaskById(id);
-        try {
-            saveId(id);
-        } catch (ManagerSaveException e) {
-            e.printStackTrace();
-        }
-        return subtasks.get(id);
+      save2();
+      return subtasks.get(id);
     }
 
     @Override
     public Epic findEpicById(Integer id) {
       super.findEpicById(id);
-        try {
-            saveId(id);
-        } catch (ManagerSaveException e) {
-            e.printStackTrace();
-        }
-        return epics.get(id);
+      save2();
+      return epics.get(id);
     }
 
     @Override
     public Task createTask(Task task) {
       super.createTask(task);
-      save();
+      save2();
       return task;
     }
 
     @Override
     public Subtask createSubtask(Subtask task) {
       super.createSubtask(task);
-      save();
+      save2();
       return task;
     }
 
     @Override
     public Epic createEpic(Epic epic) {
       super.createEpic(epic);
-      save();
+      save2();
       return epic;
     }
 

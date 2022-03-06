@@ -10,6 +10,6 @@ public interface HistoryManager {
     // удаляем задачу из истории просмотров
     void remove(Integer id);
     // получаем историю просмотров
-    List<Task> getHistory();
+    List<Integer> getHistory();
 
 }

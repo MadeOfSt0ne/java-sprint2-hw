@@ -44,5 +44,5 @@ public interface TaskManager {
     void clearAllSubtasks();
     void clearAllEpics();
     // получение истории просмотров
-    List<Task> history();
+    List<Integer> history();
 }

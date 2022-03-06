@@ -228,7 +228,7 @@ public class InMemoryTasksManager implements TaskManager {
 
     // получение истории просмотров
     @Override
-    public List<Task> history() {
+    public List<Integer> history() {
         return history.getHistory();
     }
 }
