@@ -34,7 +34,12 @@ public class InMemoryTasksManager implements TaskManager {
     // получение задачи по id
     @Override
     public Task findTaskById(Integer id) {
-        return tasks.get(id);
+        Task task = tasks.get(id);
+        if (task == null) {
+            return null;
+        }
+        history.add(task);
+        return task;
     }
 
     // получение подзадачи по id

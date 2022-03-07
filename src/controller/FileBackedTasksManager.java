@@ -50,7 +50,7 @@ public class FileBackedTasksManager extends InMemoryTasksManager {
         }
     }
 
-    // этот метод тоже работает
+    // метод для записи задач в csv
     public void save2() {
         try (PrintWriter writer = new PrintWriter("history2.csv")) {
             StringBuilder sb = new StringBuilder();
@@ -68,7 +68,7 @@ public class FileBackedTasksManager extends InMemoryTasksManager {
                 }
             }
             sb.append("\n");
-            sb.append(toString(tasksManager));
+            sb.append(toString(history));
             writer.write(sb.toString());
         } catch (FileNotFoundException ex) {
             ex.printStackTrace();
@@ -76,17 +76,17 @@ public class FileBackedTasksManager extends InMemoryTasksManager {
     }
 
     // метод для сохранения истории в csv
-    public String toString(InMemoryTasksManager manager) {
-        String start = "History: ";
-        StringBuilder sb = new StringBuilder(start);
-        for (Integer id : manager.history()) {
-            sb.append(id + ",");
+    public String toString(HistoryManager manager) {
+        StringBuilder sb = new StringBuilder();
+        for (Integer id : manager.getHistory()) {
+            sb.append(id);
+            sb.append(",");
         }
         return sb.toString();
     }
 
     // метод добавляет id просмотренных задач в файл
-    // в ТЗ про такой метод ничего нет, но раз уж он написан и работает, то пусть остается
+    // в ТЗ про такой метод ничего нет, но раз уж он написан и работает, то пусть пока остается
     public void saveId(Integer id) throws ManagerSaveException {
         try (FileWriter writer = new FileWriter("history.csv", true)) {
              writer.write(String.valueOf(id));
@@ -146,6 +146,7 @@ public class FileBackedTasksManager extends InMemoryTasksManager {
         }
     }
 
+    // поиск задач
     @Override
     public Task findTaskById(Integer id) {
       super.findTaskById(id);
@@ -167,6 +168,7 @@ public class FileBackedTasksManager extends InMemoryTasksManager {
       return null;
     }
 
+    // создание задач
     @Override
     public Task createTask(Task task) {
       super.createTask(task);
