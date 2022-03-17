@@ -52,9 +52,9 @@ public class FileBackedTasksManager extends InMemoryTasksManager {
 
     // метод для записи задач в csv
     public void save2() {
-        try (PrintWriter writer = new PrintWriter("history2.csv")) {
+        try (PrintWriter writer = new PrintWriter("history.csv")) {
             StringBuilder sb = new StringBuilder();
-            sb.append("id,type,name,status,description,epic\r\n");
+            sb.append("id,type,name,status,description,startTime,duration\r\n");
             for (Task task : findAllTasks()) {
                 sb.append(asString(task));
                 sb.append("\n");
@@ -110,10 +110,10 @@ public class FileBackedTasksManager extends InMemoryTasksManager {
         return manager;
     }
 
-    // метод для строкового отображения задачи в формате "ид,тип,имя,статус,описание"
+    // метод для строкового отображения задачи в формате "ид,тип,имя,статус,описание,время начала,продолжительность"
     public String asString(Task task) {
-        return String.format("%d,%s,%s,%s,%s", task.getId(), task.getTaskType(), task.getName()
-                , task.getStatus(), task.getDescription());
+        return String.format("%d,%s,%s,%s,%s,%tR,%d", task.getId(), task.getTaskType(), task.getName()
+                , task.getStatus(), task.getDescription(), task.getStartTime(), task.getDuration());
     }
 
     // метод для получения задачи из ее строкового вида: получаем id и ищем в нужной hashmap

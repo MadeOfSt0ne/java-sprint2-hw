@@ -6,12 +6,9 @@ public class Epic extends Task {
     private TaskType taskType;
     private ArrayList<Task> subtasks = new ArrayList<>();
 
+    // эпик создается без заданного времени начала, времени окончания и продолжительности: они вычисляются на основе подзадач
     public Epic(String name, String description, Integer id, Status status) {
         super(name, description, id, status);
-    }
-
-    public Epic(String name, String description) {
-        super(name, description, null);
     }
 
     public void addSubtask(Subtask task) {
@@ -20,10 +17,6 @@ public class Epic extends Task {
 
     public ArrayList<Task> getSubtasks() {
         return subtasks;
-    }
-
-    public void setSubtasks(ArrayList<Task> subtasks) {
-        this.subtasks = subtasks;
     }
 
     @Override
@@ -39,7 +32,6 @@ public class Epic extends Task {
                 ", id=" + getId() +
                 ", status=" + getStatus() +
                 ", subtasks='" + subtasks.size() + '\'' +
-                '}' +
-                "\n";
+                '}';
     }
 }

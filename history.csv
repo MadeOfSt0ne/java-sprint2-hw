@@ -1,6 +1,6 @@
-id,type,name,status,description
-111,TASK,task,NEW,task111
-222,SUBTASK,subtask,IN_PROGRESS,subtask222
-333,EPIC,epic,NEW,epic333
+id,type,name,status,description,startTime,duration
+111,TASK,task,NEW,task111,15:30,15
+333,EPIC,epic,NEW,epic333,00:00,0
+222,SUBTASK,subtask,IN_PROGRESS,subtask222,16:00,15
 
 222,333,111,

@@ -1,35 +1,36 @@
 package model;
 
+import java.time.LocalTime;
+
 public class Task {
     private String name;
     private String description;
     protected Integer id;
     private Status status;
     private TaskType taskType;
+    private int duration;
+    private int HH;
+    private int mm;
+    LocalTime startTime = LocalTime.of(HH, mm);
 
-    public Task() {
-        this("", "", 0, Status.NEW);
-    }
-
-    // конструктор для создания задачи по названию и номеру
-    public Task(String name, Integer id) {
-        this(name, "", id, Status.NEW);
-    }
-
-    // конструктор для создания задачи по названию, описанию и номеру
-    public Task(String name, String description, Integer id) {
+    // конструктор для создания задачи со всеми полями кроме статуса
+    public Task(String name, String description, Integer id, LocalTime startTime, int duration) {
         this.name = name;
         this.description = description;
         this.id = id;
         this.status = Status.NEW;
+        this.startTime = startTime;
+        this.duration = duration;
     }
 
-    // конструктор для создания задачи по названию, описанию, номеру и статусу
-    public Task(String name, String description,Integer id, Status status) {
+    // конструктор для создания задачи по названию, описанию, номеру, статусу, времени начала и продолжительности
+    public Task(String name, String description, Integer id, Status status, LocalTime startTime, int duration) {
         this.name = name;
         this.description = description;
         this.id = id;
         this.status = status;
+        this.startTime = startTime;
+        this.duration = duration;
     }
 
     // конструктор для создания задачи путем копирования входящей задачи
@@ -38,6 +39,16 @@ public class Task {
         this.description = task.description;
         this.id = task.id;
         this.status = task.status;
+        this.startTime = task.startTime;
+        this.duration = task.duration;
+    }
+
+    // конструктор для создания эпика: у эпика свои значения startTime и duration
+    public Task(String name, String description, Integer id, Status status) {
+        this.name = name;
+        this.description = description;
+        this.id = id;
+        this.status = status;
     }
 
     public TaskType getTaskType() {
@@ -73,6 +84,14 @@ public class Task {
         this.status = status;
     }
 
+    public LocalTime getStartTime() {
+        return startTime;
+    }
+
+    public int getDuration() {
+        return duration;
+    }
+
     @Override
     public int hashCode() {
         return id;
@@ -97,6 +116,8 @@ public class Task {
                 ", description='" + description + '\'' +
                 ", id=" + id +
                 ", status=" + status +
+                ", startTime=" + startTime +
+                ", duration=" + duration +
                 '}';
     }
 }

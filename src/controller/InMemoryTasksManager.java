@@ -1,17 +1,33 @@
 package controller;
 
-import model.*;
+import model.Epic;
+import model.Status;
+import model.Subtask;
+import model.Task;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.time.LocalTime;
+import java.util.*;
 
 public class InMemoryTasksManager implements TaskManager {
     HashMap<Integer, Task> tasks = new HashMap<>();
     HashMap<Integer, Subtask> subtasks = new HashMap<>();
     HashMap<Integer, Epic> epics = new HashMap<>();
     InMemoryHistoryManager history = new InMemoryHistoryManager();
+    TreeSet<LocalTime> epicTimeTracker = new TreeSet<>();
+    TreeMap<LocalTime, Integer> timeTracker = new TreeMap<>();
+
+    // заполняем TreeMap задачами и подзадачами в порядке от самой ранней к самой поздней
+    public TreeMap getPrioritizedTasks() {
+        for (Task task : findAllTasks()) {
+            timeTracker.put(task.getStartTime(), task.getId());
+        }
+        for (Epic epic : findAllEpics()) {
+            for (Task subtask : findAllSubtasks(epic)) {
+                timeTracker.put(subtask.getStartTime(), subtask.getId());
+            }
+        }
+        return timeTracker;
+    }
 
     // получение списка задач
     @Override
@@ -36,6 +52,7 @@ public class InMemoryTasksManager implements TaskManager {
     public Task findTaskById(Integer id) {
         Task task = tasks.get(id);
         if (task == null) {
+            System.out.print("task not found: ");
             return null;
         }
         history.add(task);
@@ -47,6 +64,7 @@ public class InMemoryTasksManager implements TaskManager {
     public Subtask findSubtaskById(Integer id) {
         Subtask subtask = subtasks.get(id);
         if (subtask == null) {
+            System.out.print("subtask not found: ");
             return null;
         }
         history.add(subtask);
@@ -58,6 +76,7 @@ public class InMemoryTasksManager implements TaskManager {
     public Epic findEpicById(Integer id) {
         Epic epic = epics.get(id);
         if (epic == null) {
+            System.out.print("epic not found: ");
             return null;
         }
         history.add(epic);
@@ -67,12 +86,26 @@ public class InMemoryTasksManager implements TaskManager {
     // создание новой задачи
     @Override
     public Task createTask(Task task) {
-        Task value = new Task(task.getName(), task.getDescription(), task.getId(), task.getStatus());
+        Task value = new Task(task.getName(), task.getDescription(), task.getId(),
+                task.getStatus(), task.getStartTime(), task.getDuration());
         if (tasks.containsKey(task.getId())) {
             System.out.println("Такая задача уже есть: " + task.getId());
             return null;
         }
         tasks.put(task.getId(), value);
+        return value;
+    }
+
+    // создание нового эпика
+    @Override
+    public Epic createEpic(Epic epic) {
+        Epic value = new Epic(epic.getName(), epic.getDescription(), epic.getId(),
+                epic.getStatus());
+        if (epics.containsKey(epic.getId())) {
+            System.out.println("Такой эпик уже есть: " + epic.getId());
+            return null;
+        }
+        epics.put(epic.getId(), value);
         return value;
     }
 
@@ -87,22 +120,11 @@ public class InMemoryTasksManager implements TaskManager {
             System.out.println("Эпик не найден: " + (task.getEpicId()));
             return null;
         }
-        Subtask value = new Subtask(task.getName(), task.getDescription(), task.getId(), task.getStatus(), task.getEpicId());
+        Subtask value = new Subtask(task.getName(), task.getDescription(), task.getId(), task.getStatus(),
+                task.getEpicId(), task.getStartTime(), task.getDuration());
         subtasks.put(task.getId(), value);
         Epic epic = epics.get(task.getEpicId());
         epic.addSubtask(task);
-        return value;
-    }
-
-    // создание нового эпика
-    @Override
-    public Epic createEpic(Epic epic) {
-        Epic value = new Epic(epic.getName(), epic.getDescription(), epic.getId(), epic.getStatus());
-        if (epics.containsKey(epic.getId())) {
-            System.out.println("Такой эпик уже есть: " + epic.getId());
-            return null;
-        }
-        epics.put(epic.getId(), value);
         return value;
     }
 
@@ -185,10 +207,62 @@ public class InMemoryTasksManager implements TaskManager {
         }
     }
 
+    // вычисление продолжительности эпика (сумма продолжительностей всех подзадач)
+    public int findEpicDuration(int epicId) {
+        int epicDuration = 0;
+        if (epics.containsKey(epicId)) {
+            for (Task subtask : epics.get(epicId).getSubtasks()) {
+                epicDuration += subtask.getDuration();
+            }
+        } else {
+            System.out.println("Эпик не найден: " + epicId);
+        }
+        return epicDuration;
+    }
+
+    // вычисление начала и окончания эпика
+    // сначала обходим список подзадач и записываем время в TreeSet. потом выводим первое значение - время начала эпика.
+    // далее берем последний элемент дерева и ищем совпадение в списке подзадач, достаем из подзадачи продолжительность
+    // и прибавляем её к времени начала. так находим время окончания эпика.
+    // минус метода заключается в больших затратах времени
+    // плюс - в простоте и надежности =)
+    public void findEpicStartAndEndTime(int epicId) {
+        if (epics.containsKey(epicId)) {
+            for (Task subtask : epics.get(epicId).getSubtasks()) {
+                epicTimeTracker.add(subtask.getStartTime());
+            }
+            LocalTime epicStartTime = epicTimeTracker.first();
+            System.out.println("Время начала эпика: " + epicStartTime);
+            for (Task subtask: epics.get(epicId).getSubtasks()) {
+                if (epicTimeTracker.last().equals(subtask.getStartTime())) {
+                    LocalTime epicEndTime = epicTimeTracker.last().plusMinutes(subtask.getDuration());
+                    System.out.println("Время окончания эпика: " + epicEndTime);
+                }
+            }
+        } else {
+            System.out.println("Эпик не найден: " + epicId);
+        }
+    }
+
+    // вычисление времени окончания задачи или подзадачи
+    public LocalTime findEndTime(int id) {
+        if (tasks.containsKey(id)) {
+            LocalTime endTime = tasks.get(id).getStartTime();
+            return endTime.plusMinutes(tasks.get(id).getDuration());
+        } else if (subtasks.containsKey(id)) {
+            LocalTime endTime = subtasks.get(id).getStartTime();
+            return endTime.plusMinutes(subtasks.get(id).getDuration());
+        } else {
+            System.out.println("Задача с таким id не найдена: " + id);
+            return null;
+        }
+    }
+
     // удаление по id
     @Override
     public void deleteTask(Integer id) {
         tasks.remove(id);
+        history.remove(id);
     }
 
     @Override
