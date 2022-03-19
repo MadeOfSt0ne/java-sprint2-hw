@@ -103,6 +103,10 @@ public class InMemoryTasksManager implements TaskManager {
     // создание новой подзадачи с проверкой доступности времени
     @Override
     public Subtask createSubtask(Subtask task) {
+        if (!epics.containsKey(task.getEpicId())) {
+            System.out.println("Эпик не найден: " + (task.getEpicId()));
+            return null;
+        }
         if (!isVacantTime(task.getStartTime(), task.getDuration())) {
             System.out.println("Это время уже занято другой задачей!");
             return null;
@@ -111,16 +115,12 @@ public class InMemoryTasksManager implements TaskManager {
             System.out.println("Такая подзадача уже есть: " + task.getId());
             return null;
         }
-        if (!epics.containsKey(task.getEpicId())) {
-            System.out.println("Эпик не найден: " + (task.getEpicId()));
-            return null;
-        }
         Subtask value = new Subtask(task.getName(), task.getDescription(), task.getId(), task.getStatus(),
-                task.getEpicId(), task.getStartTime(), task.getDuration());
-        subtasks.put(task.getId(), value);
-        Epic epic = epics.get(task.getEpicId());
-        epic.addSubtask(task);
-        return value;
+                    task.getEpicId(), task.getStartTime(), task.getDuration());
+            subtasks.put(task.getId(), value);
+            Epic epic = epics.get(task.getEpicId());
+            epic.addSubtask(task);
+            return value;
     }
 
     // обновление задачи с проверкой доступности времени
@@ -302,9 +302,9 @@ public class InMemoryTasksManager implements TaskManager {
         timeTracker = getPrioritizedTasks();
         LocalTime prevTime = timeTracker.floorKey(taskStartTime);
         LocalTime nextTime = timeTracker.ceilingKey(taskStartTime);
-        // если время начала задачи позже времени начала предыдущей задачи и время окончания задачи раньше времени
+        // если время начала задачи позже времени окончания предыдущей задачи и время окончания задачи раньше времени
         // начала следующей задачи, то временной интервал свободен
-        if ((prevTime == null || taskStartTime.isAfter(prevTime))
+        if ((prevTime == null || taskStartTime.isAfter(prevTime.plusMinutes(taskDuration)))
                 && (nextTime == null || taskEndTime.isBefore(nextTime))) {
             return true;
         } else {

@@ -10,7 +10,7 @@ import java.time.LocalTime;
 
 public class Main {
     public static void main(String[] args) {
-    // Добрый день! Тесты для последнего задания находятся ниже - старые тесты не стал удалять.
+    // Добрый день! Тесты для последнего задания находятся внизу.
         InMemoryTasksManager inMemoryTasksManager = new InMemoryTasksManager();
         InMemoryHistoryManager inMemoryHistoryManager = new InMemoryHistoryManager();
         Task task = new Task("task 1", "thisIsTask1", 1, LocalTime.of(10, 00), 15);
@@ -42,6 +42,7 @@ public class Main {
         inMemoryTasksManager.findEpicStatus(epic);
         // создание эпиков и сабтасков
         inMemoryTasksManager.createSubtask(new Subtask("subtask 3", "d 3", 23, Status.IN_PROGRESS, 11, LocalTime.of(12, 02), 17));
+        // следующая подзадача не будет создана, так как время уже занято обновленной задачей (строка 38)
         inMemoryTasksManager.createSubtask(new Subtask("subtask 4", "d 4", 24, Status.IN_PROGRESS, 11, LocalTime.of(9, 07), 15));
         inMemoryTasksManager.createEpic(new Epic("epic 2", "ddd", 12, Status.NEW));
         inMemoryTasksManager.createSubtask(new Subtask("subtask 5", "d 5", 25, Status.NEW, 12, LocalTime.of(12, 20), 15));
@@ -55,12 +56,12 @@ public class Main {
         inMemoryTasksManager.createSubtask(new Subtask("subtask 12", "d 12", 32, Status.DONE, 13, LocalTime.of(18, 00), 15));
         // добавляем просмотры
         inMemoryTasksManager.findEpicById(12);
-        inMemoryTasksManager.findSubtaskById(24);
+        inMemoryTasksManager.findSubtaskById(23);
         inMemoryTasksManager.findSubtaskById(25);
         inMemoryTasksManager.findSubtaskById(26);
         inMemoryTasksManager.findEpicById(13);
         inMemoryTasksManager.findEpicById(12);     // повторный просмотр эпика
-        inMemoryTasksManager.findSubtaskById(24);  // повторный просмотр сабтаска
+        inMemoryTasksManager.findSubtaskById(23);  // повторный просмотр сабтаска
         inMemoryTasksManager.findSubtaskById(28);
         inMemoryTasksManager.findSubtaskById(29);
         // история без дублей
