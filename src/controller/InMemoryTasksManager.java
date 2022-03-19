@@ -13,21 +13,8 @@ public class InMemoryTasksManager implements TaskManager {
     HashMap<Integer, Subtask> subtasks = new HashMap<>();
     HashMap<Integer, Epic> epics = new HashMap<>();
     InMemoryHistoryManager history = new InMemoryHistoryManager();
-    TreeSet<LocalTime> epicTimeTracker = new TreeSet<>();
+    TreeMap<LocalTime, Integer> epicTimeTracker = new TreeMap<>();
     TreeMap<LocalTime, Integer> timeTracker = new TreeMap<>();
-
-    // заполняем TreeMap задачами и подзадачами в порядке от самой ранней к самой поздней
-    public TreeMap getPrioritizedTasks() {
-        for (Task task : findAllTasks()) {
-            timeTracker.put(task.getStartTime(), task.getId());
-        }
-        for (Epic epic : findAllEpics()) {
-            for (Task subtask : findAllSubtasks(epic)) {
-                timeTracker.put(subtask.getStartTime(), subtask.getId());
-            }
-        }
-        return timeTracker;
-    }
 
     // получение списка задач
     @Override
@@ -83,11 +70,15 @@ public class InMemoryTasksManager implements TaskManager {
         return epic;
     }
 
-    // создание новой задачи
+    // создание новой задачи с проверкой доступности времени
     @Override
     public Task createTask(Task task) {
         Task value = new Task(task.getName(), task.getDescription(), task.getId(),
                 task.getStatus(), task.getStartTime(), task.getDuration());
+        if (!isVacantTime(task.getStartTime(), task.getDuration())) {
+            System.out.println("Это время уже занято другой задачей!");
+            return null;
+        }
         if (tasks.containsKey(task.getId())) {
             System.out.println("Такая задача уже есть: " + task.getId());
             return null;
@@ -109,9 +100,13 @@ public class InMemoryTasksManager implements TaskManager {
         return value;
     }
 
-    // создание новой подзадачи
+    // создание новой подзадачи с проверкой доступности времени
     @Override
     public Subtask createSubtask(Subtask task) {
+        if (!isVacantTime(task.getStartTime(), task.getDuration())) {
+            System.out.println("Это время уже занято другой задачей!");
+            return null;
+        }
         if (subtasks.containsKey(task.getId())) {
             System.out.println("Такая подзадача уже есть: " + task.getId());
             return null;
@@ -128,29 +123,41 @@ public class InMemoryTasksManager implements TaskManager {
         return value;
     }
 
-    // обновление задачи
+    // обновление задачи с проверкой доступности времени
     @Override
     public Task updateTask(Task changedTask) {
         Task savedTask = tasks.get(changedTask.getId());
+        if (!isVacantTime(changedTask.getStartTime(), changedTask.getDuration())) {
+            System.out.println("Это время уже занято другой задачей!");
+            return null;
+        }
         if (savedTask == null) {
             return null;
         }
         savedTask.setName(changedTask.getName());
         savedTask.setDescription(changedTask.getDescription());
         savedTask.setStatus(changedTask.getStatus());
+        savedTask.setStartTime(changedTask.getStartTime());
+        savedTask.setDuration(changedTask.getDuration());
         return savedTask;
     }
 
-    // обновление подзадачи
+    // обновление подзадачи с проверкой доступности времени
     @Override
     public Subtask updateSubtask(Subtask changedSubtask) {
         Subtask savedSubtask = subtasks.get(changedSubtask.getId());
+        if (!isVacantTime(changedSubtask.getStartTime(), changedSubtask.getDuration())) {
+            System.out.println("Это время уже занято другой задачей!");
+            return null;
+        }
         if (savedSubtask == null) {
             return null;
         }
         savedSubtask.setName(changedSubtask.getName());
         savedSubtask.setDescription(changedSubtask.getDescription());
         savedSubtask.setStatus(changedSubtask.getStatus());
+        savedSubtask.setStartTime(changedSubtask.getStartTime());
+        savedSubtask.setDuration(changedSubtask.getDuration());
         return savedSubtask;
     }
 
@@ -226,7 +233,7 @@ public class InMemoryTasksManager implements TaskManager {
     // и прибавляем её к времени начала. так находим время окончания эпика.
     // минус метода заключается в больших затратах времени
     // плюс - в простоте и надежности =)
-    public void findEpicStartAndEndTime(int epicId) {
+    /*public void findEpicStartAndEndTime(int epicId) {
         if (epics.containsKey(epicId)) {
             for (Task subtask : epics.get(epicId).getSubtasks()) {
                 epicTimeTracker.add(subtask.getStartTime());
@@ -239,6 +246,24 @@ public class InMemoryTasksManager implements TaskManager {
                     System.out.println("Время окончания эпика: " + epicEndTime);
                 }
             }
+        } else {
+            System.out.println("Эпик не найден: " + epicId);
+        }
+    }*/
+
+    // вычисление времени начала и окончания эпика через TreeMap: время начала и продолжительность.
+    // одним проходом по HashMap забираем время начала подзадачи и её продолжительность, записываем их в treemap
+    // и получаем сортировку, а также быстрый доступ к первому и последнему элементам
+    public void findEpicStartEndTime(int epicId) {
+        if (epics.containsKey(epicId)) {
+            for (Task subtask : epics.get(epicId).getSubtasks()) {
+                epicTimeTracker.put(subtask.getStartTime(), subtask.getDuration());
+            }
+            LocalTime epicStartTime = epicTimeTracker.firstKey();
+            System.out.println("Время начала эпика: " + epicStartTime);
+            int lastSubTaskDuration = epicTimeTracker.get(epicTimeTracker.lastKey());
+            LocalTime epicEndTime = epicTimeTracker.lastKey().plusMinutes(lastSubTaskDuration);
+            System.out.println("Время окончания эпика: " + epicEndTime);
         } else {
             System.out.println("Эпик не найден: " + epicId);
         }
@@ -255,6 +280,35 @@ public class InMemoryTasksManager implements TaskManager {
         } else {
             System.out.println("Задача с таким id не найдена: " + id);
             return null;
+        }
+    }
+
+    // заполняем TreeMap задачами и подзадачами: key - время начала, value - продолжительность задачи
+    public TreeMap getPrioritizedTasks() {
+        for (Task task : findAllTasks()) {
+            timeTracker.put(task.getStartTime(), task.getDuration());
+        }
+        for (Epic epic : findAllEpics()) {
+            for (Task subtask : findAllSubtasks(epic)) {
+                timeTracker.put(subtask.getStartTime(), subtask.getDuration());
+            }
+        }
+        return timeTracker;
+    }
+
+    // метод проверки свободного временного интервала для создания задачи
+    public boolean isVacantTime(LocalTime taskStartTime, int taskDuration) {
+        LocalTime taskEndTime = taskStartTime.plusMinutes(taskDuration);
+        timeTracker = getPrioritizedTasks();
+        LocalTime prevTime = timeTracker.floorKey(taskStartTime);
+        LocalTime nextTime = timeTracker.ceilingKey(taskStartTime);
+        // если время начала задачи позже времени начала предыдущей задачи и время окончания задачи раньше времени
+        // начала следующей задачи, то временной интервал свободен
+        if ((prevTime == null || taskStartTime.isAfter(prevTime))
+                && (nextTime == null || taskEndTime.isBefore(nextTime))) {
+            return true;
+        } else {
+            return false;
         }
     }
 

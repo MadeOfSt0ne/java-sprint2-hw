@@ -6,14 +6,11 @@ import model.Status;
 import model.Subtask;
 import model.Task;
 
-import java.io.File;
-import java.io.IOException;
 import java.time.LocalTime;
 
 public class Main {
     public static void main(String[] args) {
     // Добрый день! Тесты для последнего задания находятся ниже - старые тесты не стал удалять.
-
         InMemoryTasksManager inMemoryTasksManager = new InMemoryTasksManager();
         InMemoryHistoryManager inMemoryHistoryManager = new InMemoryHistoryManager();
         Task task = new Task("task 1", "thisIsTask1", 1, LocalTime.of(10, 00), 15);
@@ -38,14 +35,14 @@ public class Main {
         Subtask subtask22 = new Subtask("subtask 55", "description 55", 44, Status.NEW, 44, LocalTime.of(11, 40), 15);
         inMemoryTasksManager.createSubtask(subtask22);
         // обновление задачи
-        Task task2 = new Task("task 1.1", "new description", 1, Status.DONE, LocalTime.of(9, 00), 15);
+        Task task2 = new Task("task 1.1", "new description", 1, Status.DONE, LocalTime.of(9, 00), 25);
         inMemoryTasksManager.updateTask(task2);
         System.out.println("Обновленная задача: " + inMemoryTasksManager.findTaskById(1));
         // вычисление статуса эпика
         inMemoryTasksManager.findEpicStatus(epic);
         // создание эпиков и сабтасков
-        inMemoryTasksManager.createSubtask(new Subtask("subtask 3", "d 3", 23, Status.IN_PROGRESS, 11, LocalTime.of(12, 00), 15));
-        inMemoryTasksManager.createSubtask(new Subtask("subtask 4", "d 4", 24, Status.IN_PROGRESS, 11, LocalTime.of(9, 25), 15));
+        inMemoryTasksManager.createSubtask(new Subtask("subtask 3", "d 3", 23, Status.IN_PROGRESS, 11, LocalTime.of(12, 02), 17));
+        inMemoryTasksManager.createSubtask(new Subtask("subtask 4", "d 4", 24, Status.IN_PROGRESS, 11, LocalTime.of(9, 07), 15));
         inMemoryTasksManager.createEpic(new Epic("epic 2", "ddd", 12, Status.NEW));
         inMemoryTasksManager.createSubtask(new Subtask("subtask 5", "d 5", 25, Status.NEW, 12, LocalTime.of(12, 20), 15));
         inMemoryTasksManager.createSubtask(new Subtask("subtask 6", "d 6", 26, Status.DONE, 12, LocalTime.of(12, 40), 15));
@@ -91,11 +88,15 @@ public class Main {
         // берем эпик с 4 подзадачами
         System.out.println("Все подзадачи эпика : " + inMemoryTasksManager.findAllSubtasks(epic));
         // вычисление времени начала и окончания эпика
-        inMemoryTasksManager.findEpicStartAndEndTime(11);
+        //inMemoryTasksManager.findEpicStartAndEndTime(11);
+        inMemoryTasksManager.findEpicStartEndTime(11);
         // вычисление продолжительности эпика
         System.out.println("Продолжительность эпика: " + inMemoryTasksManager.findEpicDuration(11) + " минут.");
         // вычисление времени окончания задачи или подзадачи
         System.out.println("Время окончания задачи: " + inMemoryTasksManager.findEndTime(1));
         System.out.println("Время окончания подзадачи: " + inMemoryTasksManager.findEndTime(22));
+        // проверка пересечения во времени
+        inMemoryTasksManager.createTask(new Task("testTask", "doubleBooking", 7, LocalTime.of(10,10), 15));
+        inMemoryTasksManager.updateSubtask(new Subtask("testSubtask", "doubleBooking", 21, Status.NEW, 11, LocalTime.of(10,10), 15));
     }
 }
