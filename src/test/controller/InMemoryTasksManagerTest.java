@@ -24,6 +24,7 @@ class InMemoryTasksManagerTest {
     Subtask subtask3 = new Subtask("subtask 3", "description 3", 21, Status.NEW, 11, LocalTime.of(11, 00), 25);
     Subtask subtask4 = new Subtask("subtask 4", "description 4", 24, Status.NEW, 1111, LocalTime.of(11, 00), 25);
 
+    // тест включает в себя проверку методов создания, поиска, удаления
     @Test
     void createTask() {
         inMemoryTasksManager.createTask(task);
@@ -32,15 +33,28 @@ class InMemoryTasksManagerTest {
         assertEquals(savedTask, task, "задачи не совпадают");
         assertNull(inMemoryTasksManager.createTask(task2), "задача в занятом промежутке времени");    // время занято
         assertNull(inMemoryTasksManager.createTask(task3), "две задачи с одним id");    // id занят
+        assertEquals(1, inMemoryTasksManager.history().size(), "пустая история просмотров");
+        inMemoryTasksManager.deleteTask(task.getId());
+        assertNull(inMemoryTasksManager.findTaskById(task.getId()), "задача не была удалена");
+        assertEquals(0, inMemoryTasksManager.history().size(), "задача не удалена из истории");
     }
 
+    // тест включает в себя проверку методов создания, поиска, удаления
     @Test
     void createEpic() {
         inMemoryTasksManager.createEpic(epic);
+        final Epic savedEpic = inMemoryTasksManager.findEpicById(11);
+        assertNotNull(savedEpic, "эпик не найден");
+        assertEquals(savedEpic, epic, "эпики не совпадают");
         assertNotNull(inMemoryTasksManager.findAllEpics(), "пустой список эпиков");
         assertNull(inMemoryTasksManager.createEpic(epic2), "два эпика с одним id");
+        assertEquals(1, inMemoryTasksManager.history().size(), "пустая история просмотров");
+        inMemoryTasksManager.deleteEpic(epic.getId());
+        assertNull(inMemoryTasksManager.findEpicById(epic.getId()), "эпик не был удален");
+        assertEquals(0, inMemoryTasksManager.history().size(), "эпик не удален из истории");
     }
 
+    // тест включает в себя проверку методов создания, поиска, удаления
     @Test
     void createSubtask() {
         inMemoryTasksManager.createEpic(epic);
@@ -51,7 +65,13 @@ class InMemoryTasksManagerTest {
         assertNull(inMemoryTasksManager.createSubtask(subtask2), "подзадача в занятом промежутке времени");
         assertNull(inMemoryTasksManager.createSubtask(subtask3), "две подзадачи с одним id");
         assertNull(inMemoryTasksManager.createSubtask(subtask4), "создана подзадача без эпика");
+        assertEquals(1, inMemoryTasksManager.history().size(), "пустая история просмотров");
+        inMemoryTasksManager.deleteSubtask(21);
+        assertNull(inMemoryTasksManager.findSubtaskById(21), "подзадача не была удалена");
+        assertEquals(0, inMemoryTasksManager.history().size(), "задача не удалена из истории");
     }
+
+    // проверка метода поиска всех задач
     @Test
     void findAllTasks() {
         assertEquals(0, inMemoryTasksManager.findAllTasks().size(), "найдены задачи");
@@ -59,6 +79,7 @@ class InMemoryTasksManagerTest {
         assertNotNull(inMemoryTasksManager.findAllTasks(), "задача не найдена");
     }
 
+    // проверка метода поисква всех эпиков
     @Test
     void findAllEpics() {
         assertEquals(0, inMemoryTasksManager.findAllEpics().size(), "найдены эпики");
@@ -66,6 +87,7 @@ class InMemoryTasksManagerTest {
         assertNotNull(inMemoryTasksManager.findAllEpics(), "эпик не найден");
     }
 
+    // проверка метода поиска все подзадач от эпика
     @Test
     void findAllSubtasks() {
         inMemoryTasksManager.createEpic(epic);
@@ -75,21 +97,8 @@ class InMemoryTasksManagerTest {
     }
 
     @Test
-    void findTaskById() {
-        assertNull(inMemoryTasksManager.findTaskById(1), "найдена задача");
-    }
-
-    @Test
-    void findSubtaskById() {
-        assertNull(inMemoryTasksManager.findSubtaskById(21), "найдена подзадача");
-    }
-
-    @Test
-    void findEpicById() {
-    }
-
-    @Test
     void updateTask() {
+
     }
 
     @Test
@@ -125,30 +134,24 @@ class InMemoryTasksManagerTest {
     }
 
     @Test
-    void deleteTask() {
-    }
-
-    @Test
-    void deleteSubtask() {
-    }
-
-    @Test
-    void deleteEpic() {
-    }
-
-    @Test
     void clearAllTasks() {
+        inMemoryTasksManager.createTask(task);
+        inMemoryTasksManager.clearAllTasks();
+        assertEquals(0, inMemoryTasksManager.findAllTasks().size(), "список задач не пустой");
     }
 
     @Test
     void clearAllSubtasks() {
+        inMemoryTasksManager.createEpic(epic);
+        inMemoryTasksManager.createSubtask(subtask);
+        inMemoryTasksManager.clearAllSubtasks();
+        assertEquals(0, inMemoryTasksManager.findAllSubtasks(epic).size(), "список подзадач не пустой");
     }
 
     @Test
     void clearAllEpics() {
-    }
-
-    @Test
-    void history() {
+        inMemoryTasksManager.createEpic(epic);
+        inMemoryTasksManager.clearAllEpics();
+        assertEquals(0, inMemoryTasksManager.findAllEpics().size(), "список эпиков не пустой");
     }
 }
