@@ -170,7 +170,7 @@ public class InMemoryTasksManager implements TaskManager {
         }
         savedEpic.setName(changedEpic.getName());
         savedEpic.setDescription(changedEpic.getDescription());
-        findEpicStatus(changedEpic);
+        savedEpic.setStatus(changedEpic.getStatus());
         return savedEpic;
     }
 
@@ -296,7 +296,7 @@ public class InMemoryTasksManager implements TaskManager {
         return timeTracker;
     }
 
-    // метод проверки свободного временного интервала для создания задачи
+    // вспомогательный метод проверки свободного временного интервала для создания/обновления задачи
     public boolean isVacantTime(LocalTime taskStartTime, int taskDuration) {
         LocalTime taskEndTime = taskStartTime.plusMinutes(taskDuration);
         timeTracker = getPrioritizedTasks();

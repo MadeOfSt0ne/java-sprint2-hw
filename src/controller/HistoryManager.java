@@ -11,5 +11,4 @@ public interface HistoryManager {
     void remove(Integer id);
     // получаем историю просмотров
     List<Integer> getHistory();
-
 }
