@@ -30,7 +30,7 @@ public class InMemoryHistoryManager implements HistoryManager {
     }
 
     // удаление узла
-    public void removeNode1(Node node) {
+    /*public void removeNode1(Node node) {
         if (node != null) {
             if (node.prev == null) {
                 first = node.next;
@@ -45,9 +45,9 @@ public class InMemoryHistoryManager implements HistoryManager {
                 node.next = null;
             }
         }
-    }
+    }*/
 
-    // второй метод удаления узла, работает лучше первого
+    // метод удаления узла
     public void removeNode(Node node) {
         if (node == first) {
                 if (node != last) {

@@ -178,7 +178,7 @@ public class InMemoryTasksManager implements TaskManager {
     @Override
     public Status findEpicStatus(Epic epic) {
         findAllSubtasks(epic);
-        if (findAllSubtasks(epic) == null) {
+        if (findAllSubtasks(epic).size() == 0) {
             System.out.println("Статус эпика - NEW");
             epic.setStatus(Status.NEW);
             return Status.NEW;
@@ -284,7 +284,7 @@ public class InMemoryTasksManager implements TaskManager {
     }
 
     // заполняем TreeMap задачами и подзадачами: key - время начала, value - продолжительность задачи
-    public TreeMap getPrioritizedTasks() {
+    public TreeMap<LocalTime, Integer> getPrioritizedTasks() {
         for (Task task : findAllTasks()) {
             timeTracker.put(task.getStartTime(), task.getDuration());
         }
@@ -304,12 +304,8 @@ public class InMemoryTasksManager implements TaskManager {
         LocalTime nextTime = timeTracker.ceilingKey(taskStartTime);
         // если время начала задачи позже времени окончания предыдущей задачи и время окончания задачи раньше времени
         // начала следующей задачи, то временной интервал свободен
-        if ((prevTime == null || taskStartTime.isAfter(prevTime.plusMinutes(taskDuration)))
-                && (nextTime == null || taskEndTime.isBefore(nextTime))) {
-            return true;
-        } else {
-            return false;
-        }
+        return (prevTime == null || taskStartTime.isAfter(prevTime.plusMinutes(taskDuration)))
+                && (nextTime == null || taskEndTime.isBefore(nextTime));
     }
 
     // удаление по id

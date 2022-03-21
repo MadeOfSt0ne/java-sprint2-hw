@@ -13,14 +13,12 @@ public class FileBackedTasksManager extends InMemoryTasksManager {
     public FileBackedTasksManager(File file) {
        this.file = file;
     }
-    //HistoryManager history = new InMemoryHistoryManager();
-    InMemoryTasksManager tasksManager = new InMemoryTasksManager();
-    public FileBackedTasksManager() {
 
+    public FileBackedTasksManager() {
     }
 
     // громоздкий, но рабочий метод для сохранения задач в файл csv
-    public void save1() {
+   /* public void save1() {
         try {
             StringBuilder tasksToSave = new StringBuilder();
             tasksToSave.append("id,type,name,status,description");
@@ -48,7 +46,7 @@ public class FileBackedTasksManager extends InMemoryTasksManager {
         } catch (ManagerSaveException e) {
             System.out.println(e.getMessage());
         }
-    }
+    }*/
 
     // метод для записи задач в csv
     public void save2() {
@@ -87,21 +85,20 @@ public class FileBackedTasksManager extends InMemoryTasksManager {
 
     // метод добавляет id просмотренных задач в файл
     // в ТЗ про такой метод ничего нет, но раз уж он написан и работает, то пусть пока остается
-    public void saveId(Integer id) throws ManagerSaveException {
+    /*public void saveId(Integer id) throws ManagerSaveException {
         try (FileWriter writer = new FileWriter("history.csv", true)) {
              writer.write(String.valueOf(id));
              writer.write(",");
         } catch (IOException e) {
             throw new ManagerSaveException("ошибка ввода/вывода: " + e.getMessage());
         }
-    }
+    }*/
 
     // метод для загрузки менеджера из файла
     public static FileBackedTasksManager loadFromFile(File file) throws ManagerSaveException {
         FileBackedTasksManager manager = new FileBackedTasksManager(file);
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-            String line;
-            while ((line = br.readLine()) != null) {
+            while (br.ready()) {
                 manager.save2();
             }
         } catch (IOException e) {
@@ -149,46 +146,44 @@ public class FileBackedTasksManager extends InMemoryTasksManager {
     // поиск задач
     @Override
     public Task findTaskById(Integer id) {
-      super.findTaskById(id);
-      save2();
-      return null;
+        super.findTaskById(id);
+        save2();
+        return tasks.get(id);
     }
 
     @Override
     public Subtask findSubtaskById(Integer id) {
-      super.findSubtaskById(id);
-      save2();
-      return null;
+        super.findSubtaskById(id);
+        save2();
+        return subtasks.get(id);
     }
 
     @Override
     public Epic findEpicById(Integer id) {
-      super.findEpicById(id);
-      save2();
-      return null;
+        super.findEpicById(id);
+        save2();
+        return epics.get(id);
     }
 
     // создание задач
     @Override
     public Task createTask(Task task) {
-      super.createTask(task);
-      save2();
-      return null;
+        super.createTask(task);
+        save2();
+        return task;
     }
 
     @Override
     public Subtask createSubtask(Subtask task) {
       super.createSubtask(task);
       save2();
-      return null;
+      return task;
     }
 
     @Override
     public Epic createEpic(Epic epic) {
       super.createEpic(epic);
       save2();
-      return null;
+      return epic;
     }
-
-
 }
