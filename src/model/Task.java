@@ -6,6 +6,7 @@ public class Task {
     private String name;
     private String description;
     protected Integer id;
+    private Integer epicId;
     private Status status;
     private TaskType taskType;
     private int duration;
@@ -33,6 +34,16 @@ public class Task {
         this.duration = duration;
     }
 
+    // конструктор для создания задачи по названию, описанию, номеру, статусу, времени начала и продолжительности
+    public Task(String name, String description, Integer id, Status status, LocalTime startTime, int duration, Integer epicId) {
+        this.name = name;
+        this.description = description;
+        this.id = id;
+        this.status = status;
+        this.startTime = startTime;
+        this.duration = duration;
+        this.epicId = epicId;
+    }
     // конструктор для создания задачи путем копирования входящей задачи
     public Task(Task task) {
         this.name = task.name;
@@ -102,6 +113,10 @@ public class Task {
 
     public void setDuration(int duration) {
         this.duration = duration;
+    }
+
+    public Integer getEpicId() {
+        return epicId;
     }
 
     @Override

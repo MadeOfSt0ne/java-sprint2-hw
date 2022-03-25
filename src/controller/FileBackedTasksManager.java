@@ -4,6 +4,9 @@ import exceptions.ManagerSaveException;
 import model.*;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -94,23 +97,44 @@ public class FileBackedTasksManager extends InMemoryTasksManager {
         }
     }*/
 
-    // метод для загрузки менеджера из файла
-    public static FileBackedTasksManager loadFromFile(File file) throws ManagerSaveException {
-        FileBackedTasksManager manager = new FileBackedTasksManager(file);
-        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-            while (br.ready()) {
-                manager.save2();
-            }
+    public static String load(File file) {
+        try {
+            return Files.readString(Path.of(file.getPath()));
         } catch (IOException e) {
-            throw new ManagerSaveException(e.getMessage());
+            System.out.println("Невозможно прочитать файл. Возможно, файл не находится в нужной директории.");
+            return null;
         }
+    }
+
+    public static FileBackedTasksManager loadFromFile(File file) throws IOException {
+        FileBackedTasksManager manager = new FileBackedTasksManager(file);
+        if (file.exists()) {
+            BufferedReader br = new BufferedReader(new FileReader(file));
+            String line;
+            while ((line = br.readLine()) != null){
+                manager.createTask(manager.taskFromString(line));
+                }
+            }
         return manager;
+    }
+
+    public Task taskFromString(String value) throws ArrayIndexOutOfBoundsException {
+        String[] split = value.split(",");
+        if (TaskType.valueOf(split[1]) == (TaskType.TASK)) {
+            return new Task(split[2], split[4], Integer.parseInt(split[0]), Status.valueOf(split[3]));
+        } else if (TaskType.valueOf(split[1]).equals(TaskType.EPIC)) {
+            return new Epic(split[2], split[4], Integer.parseInt(split[0]), Status.valueOf(split[3]));
+        } else if (TaskType.valueOf(split[1]).equals(TaskType.SUBTASK)) {
+            return new Subtask(split[2], split[4], Integer.parseInt(split[0]), Status.valueOf(split[3]), Integer.parseInt(split[7]));
+        } else {
+            return null;
+        }
     }
 
     // метод для строкового отображения задачи в формате "ид,тип,имя,статус,описание,время начала,продолжительность"
     public String asString(Task task) {
-        return String.format("%d,%s,%s,%s,%s,%tR,%d", task.getId(), task.getTaskType(), task.getName()
-                , task.getStatus(), task.getDescription(), task.getStartTime(), task.getDuration());
+        return String.format("%d,%s,%s,%s,%s,%tR,%d,%d", task.getId(), task.getTaskType(), task.getName()
+                , task.getStatus(), task.getDescription(), task.getStartTime(), task.getDuration(), task.getEpicId());
     }
 
     // метод для получения задачи из ее строкового вида: получаем id и ищем в нужной hashmap

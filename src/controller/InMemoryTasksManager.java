@@ -227,30 +227,6 @@ public class InMemoryTasksManager implements TaskManager {
         return epicDuration;
     }
 
-    // вычисление начала и окончания эпика
-    // сначала обходим список подзадач и записываем время в TreeSet. потом выводим первое значение - время начала эпика.
-    // далее берем последний элемент дерева и ищем совпадение в списке подзадач, достаем из подзадачи продолжительность
-    // и прибавляем её к времени начала. так находим время окончания эпика.
-    // минус метода заключается в больших затратах времени
-    // плюс - в простоте и надежности =)
-    /*public void findEpicStartAndEndTime(int epicId) {
-        if (epics.containsKey(epicId)) {
-            for (Task subtask : epics.get(epicId).getSubtasks()) {
-                epicTimeTracker.add(subtask.getStartTime());
-            }
-            LocalTime epicStartTime = epicTimeTracker.first();
-            System.out.println("Время начала эпика: " + epicStartTime);
-            for (Task subtask: epics.get(epicId).getSubtasks()) {
-                if (epicTimeTracker.last().equals(subtask.getStartTime())) {
-                    LocalTime epicEndTime = epicTimeTracker.last().plusMinutes(subtask.getDuration());
-                    System.out.println("Время окончания эпика: " + epicEndTime);
-                }
-            }
-        } else {
-            System.out.println("Эпик не найден: " + epicId);
-        }
-    }*/
-
     // вычисление времени начала и окончания эпика через TreeMap: время начала и продолжительность.
     // одним проходом по HashMap забираем время начала подзадачи и её продолжительность, записываем их в treemap
     // и получаем сортировку, а также быстрый доступ к первому и последнему элементам

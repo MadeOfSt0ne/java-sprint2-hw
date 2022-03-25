@@ -6,11 +6,14 @@ import model.Status;
 import model.Subtask;
 import model.Task;
 
+import java.io.File;
+import java.io.IOException;
 import java.time.LocalTime;
 
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
     // Добрый день! Тесты для последнего задания находятся внизу.
+        File file;
         InMemoryTasksManager inMemory = new InMemoryTasksManager();
         InMemoryHistoryManager inMemoryHistoryManager = new InMemoryHistoryManager();
         Task task = new Task("task 1", "thisIsTask1", 1, LocalTime.of(10, 0), 15);
@@ -86,6 +89,9 @@ public class Main {
         // считывание из файла в строку
         System.out.print("Содержимое csv файла: ");
         System.out.println(fileBacked.fromFile("history.csv"));
+        file = new File("history.csv");
+        FileBackedTasksManager loadedManager = fileBacked.loadFromFile(file);
+        System.out.println(loadedManager.fromFile("history.csv"));
         // ==================================== тесты для задач 6 спринта ============================================
         // задачи и подзадачи по времени начала
         System.out.println("Задачи и подзадачи по времени: " + inMemory.getPrioritizedTasks());
