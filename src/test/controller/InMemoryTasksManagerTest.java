@@ -4,6 +4,7 @@ import model.Epic;
 import model.Status;
 import model.Subtask;
 import model.Task;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalTime;
@@ -12,21 +13,30 @@ import java.util.TreeMap;
 import static org.junit.jupiter.api.Assertions.*;
 
 class InMemoryTasksManagerTest {
-    // Как же много времени отнимает написание тестов =((
-
     InMemoryTasksManager inMemory = new InMemoryTasksManager();
-    Task task = new Task("correctTask", "thisIsTask1", 1, LocalTime.of(10, 0), 15);
-    Task task2 = new Task("incorrectStartTimeTask", "thisIsTask2", 2, LocalTime.of(10, 0), 15);
-    Task task3 = new Task("incorrectIdTask", "thisIsTask3", 1, LocalTime.of(11, 0), 15);
+    // если переменные объявлять и присваивать им значение внутри метода с аннотацией BeforeEach, они будут недоступны.
+    // если делать для них отдельный класс, то это ухудшит читаемость тестов: нужно обращаться к методу одного класса и
+    // передавать в него значение другого класса. ошибки придется искать в двух классах.
+    // пока остановился на таком варианте, хоть он и занимает больше строчек
+    static Task task, task2, task3;
+    static Epic epic, epic2;
+    static Subtask subtask, subtask1, subtask2, subtask3, subtask4;
 
-    Epic epic = new Epic("correctEpic", "thisIsEpic1", 11, Status.NEW);
-    Epic epic2 = new Epic("incorrectIdEpic", "thisIsEpic2", 11, Status.IN_PROGRESS);
+    @BeforeEach
+    public void init() {
+        task = new Task("correctTask", "thisIsTask1", 1, LocalTime.of(10, 0), 15);
+        task2 = new Task("incorrectStartTimeTask", "thisIsTask2", 2, LocalTime.of(10, 0), 15);
+        task3 = new Task("incorrectIdTask", "thisIsTask3", 1, LocalTime.of(11, 0), 15);
 
-    Subtask subtask = new Subtask("correctSub", "description 1", 21, Status.DONE, 11, LocalTime.of(10, 20), 15);
-    Subtask subtask1 = new Subtask("correctSub", "description 1", 29, Status.DONE, 11, LocalTime.of(12, 20), 22);
-    Subtask subtask2 = new Subtask("incorrectTimeSub", "description 2", 22, Status.NEW, 11, LocalTime.of(10, 30), 25);
-    Subtask subtask3 = new Subtask("incorrectIdSub", "description 3", 21, Status.NEW, 11, LocalTime.of(11, 0), 25);
-    Subtask subtask4 = new Subtask("incorrectEpicIdSub", "description 4", 24, Status.NEW, 1111, LocalTime.of(11, 0), 25);
+        epic = new Epic("correctEpic", "thisIsEpic1", 11, Status.NEW);
+        epic2 = new Epic("incorrectIdEpic", "thisIsEpic2", 11, Status.IN_PROGRESS);
+
+        subtask = new Subtask("correctSub", "description 1", 21, Status.DONE, 11, LocalTime.of(10, 20), 15);
+        subtask1 = new Subtask("correctSub", "description 1", 29, Status.DONE, 11, LocalTime.of(12, 20), 22);
+        subtask2 = new Subtask("incorrectTimeSub", "description 2", 22, Status.NEW, 11, LocalTime.of(10, 30), 25);
+        subtask3 = new Subtask("incorrectIdSub", "description 3", 21, Status.NEW, 11, LocalTime.of(11, 0), 25);
+        subtask4 = new Subtask("incorrectEpicIdSub", "description 4", 24, Status.NEW, 1111, LocalTime.of(11, 0), 25);
+    }
 
     // тест включает в себя проверку методов создания, поиска, удаления из списка и истории
     @Test
