@@ -49,7 +49,8 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     // метод удаления узла
     public void removeNode(Node node) {
-        if (node == first) {
+        try {
+            if (node == first) {
                 if (node != last) {
                     first.prev = null;
                 } else {
@@ -67,6 +68,9 @@ public class InMemoryHistoryManager implements HistoryManager {
                 node.prev = null;
                 node.next = null;
             }
+        } catch (NullPointerException e) {
+            return;
+        }
     }
 
     // добавление элемента на последнее место

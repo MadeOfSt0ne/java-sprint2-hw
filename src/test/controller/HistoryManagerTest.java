@@ -9,7 +9,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 class HistoryManagerTest {
-InMemoryHistoryManager historyManager = new InMemoryHistoryManager();
+    InMemoryHistoryManager historyManager = new InMemoryHistoryManager();
 
     @Test
     void add() {

@@ -1,17 +1,18 @@
 package controller;
 
-import exceptions.ManagerSaveException;
-import model.*;
+import model.Epic;
+import model.Status;
+import model.Subtask;
+import model.Task;
 
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
 public class FileBackedTasksManager extends InMemoryTasksManager {
     private File file;
+    List<Task> historyList = new ArrayList<>();
+    InMemoryHistoryManager historyManager = new InMemoryHistoryManager();
 
     public FileBackedTasksManager(File file) {
        this.file = file;
@@ -55,7 +56,7 @@ public class FileBackedTasksManager extends InMemoryTasksManager {
     public void save2() {
         try (PrintWriter writer = new PrintWriter("history.csv")) {
             StringBuilder sb = new StringBuilder();
-            sb.append("id,type,name,status,description,startTime,duration\r\n");
+            sb.append("id,type,name,status,description,epicId\r\n");
             for (Task task : findAllTasks()) {
                 sb.append(asString(task));
                 sb.append("\n");
@@ -97,44 +98,48 @@ public class FileBackedTasksManager extends InMemoryTasksManager {
         }
     }*/
 
-    public static String load(File file) {
-        try {
-            return Files.readString(Path.of(file.getPath()));
-        } catch (IOException e) {
-            System.out.println("Невозможно прочитать файл. Возможно, файл не находится в нужной директории.");
-            return null;
-        }
-    }
-
-    public static FileBackedTasksManager loadFromFile(File file) throws IOException {
+    // метод считывает строки из файла, вызывает вспомогательный метод для превращения строки в задачу (если строка
+    // содержит данные о задаче) и добавляет задачу в историю
+    public static FileBackedTasksManager loadFromFile(File file) {
         FileBackedTasksManager manager = new FileBackedTasksManager(file);
-        if (file.exists()) {
+        try {
             BufferedReader br = new BufferedReader(new FileReader(file));
             String line;
-            while ((line = br.readLine()) != null){
-                manager.createTask(manager.taskFromString(line));
-                }
+            while ((line = br.readLine()) != null) {
+                Task task = manager.taskFromString(line);
+                manager.addToHistory(task);
             }
-        return manager;
+            return manager;
+        } catch (IOException e) {
+            return manager;
+        }
     }
 
-    public Task taskFromString(String value) throws ArrayIndexOutOfBoundsException {
-        String[] split = value.split(",");
-        if (TaskType.valueOf(split[1]) == (TaskType.TASK)) {
-            return new Task(split[2], split[4], Integer.parseInt(split[0]), Status.valueOf(split[3]));
-        } else if (TaskType.valueOf(split[1]).equals(TaskType.EPIC)) {
-            return new Epic(split[2], split[4], Integer.parseInt(split[0]), Status.valueOf(split[3]));
-        } else if (TaskType.valueOf(split[1]).equals(TaskType.SUBTASK)) {
-            return new Subtask(split[2], split[4], Integer.parseInt(split[0]), Status.valueOf(split[3]), Integer.parseInt(split[7]));
-        } else {
+    // метод парсит строку и возвращает её в виде задачи
+    public Task taskFromString(String str) {
+        String[] split = str.split(",");
+        try {
+            Integer taskId = Integer.parseInt(split[0]);
+            String taskName = split[2];
+            String taskDescription = split[4];
+            Status taskStatus = Status.valueOf(split[3]);
+            if (Integer.parseInt(split[5]) == 0) {
+                return new Task(taskName, taskDescription, taskId, taskStatus);
+            } else {
+                Integer epicId = Integer.parseInt(split[5]);
+                return new Subtask(taskName, taskDescription, taskId, taskStatus, epicId);
+            }
+        } catch (NumberFormatException e) {
+            return null;
+        } catch (ArrayIndexOutOfBoundsException e) {
             return null;
         }
     }
 
-    // метод для строкового отображения задачи в формате "ид,тип,имя,статус,описание,время начала,продолжительность"
+    // метод для строкового отображения задачи в формате "ид,тип,имя,статус,описание,эпик id"
     public String asString(Task task) {
-        return String.format("%d,%s,%s,%s,%s,%tR,%d,%d", task.getId(), task.getTaskType(), task.getName()
-                , task.getStatus(), task.getDescription(), task.getStartTime(), task.getDuration(), task.getEpicId());
+        return String.format("%d,%s,%s,%s,%s,%d", task.getId(), task.getTaskType(), task.getName()
+                , task.getStatus(), task.getDescription(), task.getEpicId());
     }
 
     // метод для получения задачи из ее строкового вида: получаем id и ищем в нужной hashmap
@@ -209,5 +214,16 @@ public class FileBackedTasksManager extends InMemoryTasksManager {
       super.createEpic(epic);
       save2();
       return epic;
+    }
+
+    // метод для создания новой истории задач на основе данных файла
+    void addToHistory(Task task) {
+        if (task == null) {
+            return;
+        }
+        if (historyList.contains(task)) {
+            return;
+        }
+        historyList.add(task);
     }
 }

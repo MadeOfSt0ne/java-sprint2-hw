@@ -84,6 +84,7 @@ public class InMemoryTasksManager implements TaskManager {
             return null;
         }
         tasks.put(task.getId(), value);
+        history.add(task);
         return value;
     }
 
@@ -97,6 +98,7 @@ public class InMemoryTasksManager implements TaskManager {
             return null;
         }
         epics.put(epic.getId(), value);
+        history.add(epic);
         return value;
     }
 
@@ -120,6 +122,7 @@ public class InMemoryTasksManager implements TaskManager {
             subtasks.put(task.getId(), value);
             Epic epic = epics.get(task.getEpicId());
             epic.addSubtask(task);
+            history.add(task);
             return value;
     }
 

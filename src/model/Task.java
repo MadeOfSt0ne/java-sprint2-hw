@@ -6,7 +6,7 @@ public class Task {
     private String name;
     private String description;
     protected Integer id;
-    private Integer epicId;
+    private int epicId;
     private Status status;
     private TaskType taskType;
     private int duration;
