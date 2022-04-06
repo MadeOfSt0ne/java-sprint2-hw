@@ -1,6 +1,8 @@
 import controller.FileBackedTasksManager;
 import controller.InMemoryHistoryManager;
 import controller.InMemoryTasksManager;
+import http.HttpTaskServer;
+import http.KVServer;
 import model.Epic;
 import model.Status;
 import model.Subtask;
@@ -11,10 +13,11 @@ import java.io.IOException;
 import java.time.LocalTime;
 
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
+        new KVServer().start();
+        //new HttpTaskServer().start();
     // Добрый день! Тесты для последнего задания находятся внизу.
-        File file;
-        InMemoryTasksManager inMemory = new InMemoryTasksManager();
+    /*    InMemoryTasksManager inMemory = new InMemoryTasksManager();
         InMemoryHistoryManager inMemoryHistoryManager = new InMemoryHistoryManager();
         Task task = new Task("task 1", "thisIsTask1", 1, LocalTime.of(10, 0), 15);
         inMemory.createTask(task);
@@ -104,6 +107,6 @@ public class Main {
         System.out.println("Время окончания подзадачи: " + inMemory.findEndTime(22));
         // проверка пересечения во времени
         inMemory.createTask(new Task("testTask", "doubleBooking", 7, LocalTime.of(10,10), 15));
-        inMemory.updateSubtask(new Subtask("testSubtask", "doubleBooking", 21, Status.NEW, 11, LocalTime.of(10,10), 15));
+        inMemory.updateSubtask(new Subtask("testSubtask", "doubleBooking", 21, Status.NEW, 11, LocalTime.of(10,10), 15));*/
     }
 }

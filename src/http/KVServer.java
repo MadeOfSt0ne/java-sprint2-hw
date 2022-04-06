@@ -70,7 +70,6 @@ public class KVServer {
             }
         });
         server.createContext("/load", (h) -> {
-            // TODO Добавьте получение значения по ключу
             try {
                 System.out.println("\n/load");
                 if (!hasAuth(h)) {
@@ -82,14 +81,13 @@ public class KVServer {
                     case "GET":
                         String key = h.getRequestURI().getPath().substring("/load/".length());
                         if (key.isEmpty()) {
-                            System.out.println("Key для сохранения пустой. key указывается в пути: /load/{key}");
+                            System.out.println("Key для поиска пустой. key указывается в пути: /load/{key}");
                             h.sendResponseHeaders(400, 0);
                             return;
                         }
-                        String value = readText(h);
-                        if (value.isEmpty()) {
-                            System.out.println("Value для сохранения пустой. value указывается в теле запроса");
-                            h.sendResponseHeaders(400, 0);
+                        if (!data.containsKey(key)) {
+                            System.out.println("Ключ " + key + " не найден.");
+                            h.sendResponseHeaders(404, 0);
                             return;
                         }
                         sendText(h, data.get(key));
@@ -111,6 +109,11 @@ public class KVServer {
         System.out.println("Открой в браузере http://localhost:" + PORT + "/");
         System.out.println("API_KEY: " + API_KEY);
         server.start();
+    }
+
+    public void stop() {
+        server.stop(0);
+        System.out.println("Остановили сервер на порту " + PORT);
     }
 
     private String generateApiKey() {

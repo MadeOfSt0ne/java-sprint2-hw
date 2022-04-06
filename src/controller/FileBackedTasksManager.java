@@ -53,7 +53,7 @@ public class FileBackedTasksManager extends InMemoryTasksManager {
     }*/
 
     // метод для записи задач в csv
-    public void save2() {
+    protected void save() {
         try (PrintWriter writer = new PrintWriter("history.csv")) {
             StringBuilder sb = new StringBuilder();
             sb.append("id,type,name,status,description,epicId\r\n");
@@ -129,9 +129,7 @@ public class FileBackedTasksManager extends InMemoryTasksManager {
                 Integer epicId = Integer.parseInt(split[5]);
                 return new Subtask(taskName, taskDescription, taskId, taskStatus, epicId);
             }
-        } catch (NumberFormatException e) {
-            return null;
-        } catch (ArrayIndexOutOfBoundsException e) {
+        } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
             return null;
         }
     }
@@ -176,21 +174,21 @@ public class FileBackedTasksManager extends InMemoryTasksManager {
     @Override
     public Task findTaskById(Integer id) {
         super.findTaskById(id);
-        save2();
+        save();
         return tasks.get(id);
     }
 
     @Override
     public Subtask findSubtaskById(Integer id) {
         super.findSubtaskById(id);
-        save2();
+        save();
         return subtasks.get(id);
     }
 
     @Override
     public Epic findEpicById(Integer id) {
         super.findEpicById(id);
-        save2();
+        save();
         return epics.get(id);
     }
 
@@ -198,21 +196,21 @@ public class FileBackedTasksManager extends InMemoryTasksManager {
     @Override
     public Task createTask(Task task) {
         super.createTask(task);
-        save2();
+        save();
         return task;
     }
 
     @Override
     public Subtask createSubtask(Subtask task) {
       super.createSubtask(task);
-      save2();
+      save();
       return task;
     }
 
     @Override
     public Epic createEpic(Epic epic) {
       super.createEpic(epic);
-      save2();
+      save();
       return epic;
     }
 
