@@ -1,5 +1,7 @@
 package http;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 
@@ -21,6 +23,7 @@ public class HttpTaskServer {
         this.httpManager = httpManager;
         server = HttpServer.create();
         server.bind(new InetSocketAddress(PORT), 0);
+        GsonBuilder gson = new GsonBuilder();
 
         server.createContext("/tasks/task", (h) -> {
             try {
@@ -214,14 +217,16 @@ public class HttpTaskServer {
                 h.close();
             }
         });
-       /* server.createContext("/tasks/", (h) -> {
+        server.createContext("/tasks/", (h) -> {
             try {
                 System.out.println("\n/tasks/");
                 if (h.getRequestMethod().equals("GET")) {
-                    for (Integer i : httpManager.getPrioritizedTasks().size())
+                    httpManager.getPrioritizedTasks();
                 }
+            } finally {
+                h.close();
             }
-        });*/
+        });
 
 
 
