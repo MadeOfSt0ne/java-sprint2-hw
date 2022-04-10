@@ -46,7 +46,7 @@ public class HttpTaskServer {
                     case "GET":
                         // если не указан id, то возвращаем все задачи
                         if (query.isEmpty()) {
-                            sendText(h, gson.toJson(httpManager.findAllTasks()));
+                            sendText(h, gson.toJson(httpManager.getAllTasks()));
                             System.out.println("Все задачи успешно получены.");
                             h.sendResponseHeaders(200, 0);
                             return;
@@ -100,7 +100,7 @@ public class HttpTaskServer {
                         break;
                     case "GET":
                         if (query.isEmpty()) {
-                            sendText(h, gson.toJson(httpManager.findAllEpics()));
+                            sendText(h, gson.toJson(httpManager.getAllEpics()));
                             System.out.println("Все эпики успешно получены.");
                             h.sendResponseHeaders(200, 0);
                             return;

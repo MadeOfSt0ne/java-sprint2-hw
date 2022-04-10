@@ -13,6 +13,10 @@ import java.util.TreeMap;
 import static org.junit.jupiter.api.Assertions.*;
 
 class HTTPTaskManagerTest {
+
+    // Добрый день! Тесты валятся скорее всего из-за KVTaskClient'a. Через инсомнию квсервер работает хорошо: register,
+    // save, load. Может вы мне что-нибудь подскажете?
+
     static HTTPTaskManager manager = new HTTPTaskManager();
     static KVServer server;
     static Task task, task2, task3;
@@ -89,16 +93,16 @@ class HTTPTaskManagerTest {
 
     // проверка метода поиска всех задач
     @Test
-    void findAllTasks() {
-        assertEquals(0, manager.findAllTasks().size(), "найдены задачи");
+    void getAllTasks() {
+        assertEquals(0, manager.getAllTasks().size(), "найдены задачи");
         manager.createTask(task);
         assertNotNull(manager.findAllTasks(), "задача не найдена");
     }
 
     // проверка метода поиска всех эпиков
     @Test
-    void findAllEpics() {
-        assertEquals(0, manager.findAllEpics().size(), "найдены эпики");
+    void getAllEpics() {
+        assertEquals(0, manager.getAllEpics().size(), "найдены эпики");
         manager.createEpic(epic);
         assertNotNull(manager.findAllEpics(), "эпик не найден");
     }
@@ -113,11 +117,11 @@ class HTTPTaskManagerTest {
     }
 
     @Test
-    void getPrioritizedTasks() {
+    void prioritizedTasks() {
         manager.createTask(new Task("one", "-", 1, LocalTime.of(10, 30), 20));
         manager.createTask(new Task("two", "-", 2, LocalTime.of(9, 30), 20));
         manager.createTask(new Task("three", "-", 3, LocalTime.of(10, 0), 20));
-        TreeMap<LocalTime, Integer> treeMap = manager.getPrioritizedTasks();
+        TreeMap<LocalTime, Integer> treeMap = manager.prioritizedTasks();
         assertEquals(LocalTime.of(9, 30), treeMap.firstKey(), "неверная сортировка");
         assertEquals(LocalTime.of(10, 30), treeMap.lastKey(), "неверная сортировка");
     }

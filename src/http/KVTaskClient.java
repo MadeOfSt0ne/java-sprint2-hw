@@ -10,6 +10,10 @@ public class KVTaskClient {
     private final String API_KEY;
     private final int PORT = 8078;
 
+    // Конструктор принимает URL к серверу хранилища и регистрируется. При регистрации выдаётся ключ (API_KEY),
+    // который нужен при работе с сервером. Я сделал как смог, но оно не работает должным образом.
+    // Консоль в тестах выглядит так, будто клиент пытается зарегистрироваться раньше запуска сервера.
+
     public KVTaskClient() {
         API_KEY = registerKey();
     }
@@ -37,7 +41,7 @@ public class KVTaskClient {
     }
 
     // метод для сохранения состояния менеджера задач
-    public void save(String key, String json) {
+    public void put(String key, String json) {
         URI uri = URI.create("http://localhost:" + PORT + "/save/" + key + "?API_KEY=" + API_KEY);
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()

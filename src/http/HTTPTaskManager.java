@@ -17,28 +17,35 @@ public class HTTPTaskManager extends FileBackedTasksManager {
     public KVTaskClient kvTaskClient;
     public final String TASKS_KEY = "ALLTASKS";
     public final String HISTORY_KEY = "HISTORY";
+    List<String> allTasks = new ArrayList<>();
+    List<Integer> history = new ArrayList<>();
+    TreeMap<LocalTime, Integer> prioritizedTasks = new TreeMap<>();
     public HTTPTaskManager() {
         kvTaskClient = new KVTaskClient();
     }
     Gson gson;
 
+    // Метод поштучно сериализует задачи, эпики, подзадачи в json, собирает эти json в список и загружает список на
+    // сервер с выбранным ключом. Таким образом в таблице data хранятся два списка: один с задачами, другой с историей.
     public void saveToKv() {
-        List<String> allTasks = new ArrayList<>();
-        List<Integer> history = new ArrayList<>();
-        for (Task task : findAllTasks()) {
-            allTasks.add(gson.toJson(task));
-            history.add(task.getId());
-        }
-        for (Epic epic : findAllEpics()) {
-            allTasks.add(gson.toJson(epic));
-            history.add(epic.getId());
-            for (Task sub : findAllSubtasks(epic)) {
-                allTasks.add(gson.toJson(sub));
-                history.add(sub.getId());
+        try {
+            for (Task task : findAllTasks()) {
+                allTasks.add(gson.toJson(task));
+                history.add(task.getId());
             }
+            for (Epic epic : findAllEpics()) {
+                allTasks.add(gson.toJson(epic));
+                history.add(epic.getId());
+                for (Task sub : findAllSubtasks(epic)) {
+                    allTasks.add(gson.toJson(sub));
+                    history.add(sub.getId());
+                }
+            }
+            kvTaskClient.put(TASKS_KEY, gson.toJson(allTasks));
+            kvTaskClient.put(HISTORY_KEY, gson.toJson(history));
+        } catch (NullPointerException e) {
+            e.printStackTrace();
         }
-        kvTaskClient.save(TASKS_KEY, gson.toJson(allTasks));
-        kvTaskClient.save(HISTORY_KEY, gson.toJson(history));
     }
 
     @Override
@@ -59,9 +66,9 @@ public class HTTPTaskManager extends FileBackedTasksManager {
         saveToKv();
     }
 
-    @Override
-    public TreeMap<LocalTime, Integer> getPrioritizedTasks() {
-        TreeMap<LocalTime, Integer> prioritizedTasks = new TreeMap<>();
+
+    public TreeMap<LocalTime, Integer> prioritizedTasks() {
+
         List<Task> allTasks = gson.fromJson(kvTaskClient.load(TASKS_KEY)
                 , new TypeToken<ArrayList<Task>>() {}.getType());
         for (Task task : allTasks) {
@@ -112,21 +119,24 @@ public class HTTPTaskManager extends FileBackedTasksManager {
                 , new TypeToken<ArrayList<Integer>>() {}.getType());
     }
 
-    @Override
-    public List<Task> findAllTasks() {
+    public List<Task> getAllTasks() {
         List<Task> tasks = new ArrayList<>();
-        List<Task> allTasks = gson.fromJson(kvTaskClient.load(TASKS_KEY)
-                , new TypeToken<ArrayList<Task>>() {}.getType());
-        for (Task task : allTasks) {
-            if (task.getTaskType().equals(TaskType.TASK)) {
-                tasks.add(task);
+        try {
+            List<Task> allTasks = gson.fromJson(kvTaskClient.load(TASKS_KEY)
+                    , new TypeToken<ArrayList<Task>>() {}.getType());
+            for (Task task : allTasks) {
+                if (task.getTaskType().equals(TaskType.TASK)) {
+                    tasks.add(task);
+                }
             }
+            return tasks;
+        }catch (NullPointerException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
         }
-        return tasks;
     }
 
-    @Override
-    public List<Epic> findAllEpics() {
+    public List<Epic> getAllEpics() {
         List<Epic> epics = new ArrayList<>();
         List<Task> allTasks =  gson.fromJson(kvTaskClient.load(TASKS_KEY)
                 , new TypeToken<ArrayList<Epic>>() {}.getType());
