@@ -1,5 +1,6 @@
 package model;
 
+import java.net.InetSocketAddress;
 import java.time.LocalTime;
 
 public class Task {
@@ -64,6 +65,12 @@ public class Task {
 
     public Task() {
 
+    }
+
+    public Task(String name, String description, Integer id) {
+        this.name = name;
+        this.description = description;
+        this.id = id;
     }
 
     public TaskType getTaskType() {

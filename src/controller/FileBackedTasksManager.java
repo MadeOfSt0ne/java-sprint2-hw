@@ -10,12 +10,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FileBackedTasksManager extends InMemoryTasksManager {
-    private File file;
     List<Task> historyList = new ArrayList<>();
     InMemoryHistoryManager historyManager = new InMemoryHistoryManager();
 
     public FileBackedTasksManager(File file) {
-       this.file = file;
     }
 
     public FileBackedTasksManager() {
@@ -194,24 +192,21 @@ public class FileBackedTasksManager extends InMemoryTasksManager {
 
     // создание задач
     @Override
-    public Task createTask(Task task) {
+    public void createTask(Task task) {
         super.createTask(task);
         save();
-        return task;
     }
 
     @Override
-    public Subtask createSubtask(Subtask task) {
+    public void createSubtask(Subtask task) {
       super.createSubtask(task);
       save();
-      return task;
     }
 
     @Override
-    public Epic createEpic(Epic epic) {
+    public void createEpic(Epic epic) {
       super.createEpic(epic);
       save();
-      return epic;
     }
 
     // метод для создания новой истории задач на основе данных файла

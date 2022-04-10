@@ -14,10 +14,10 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class InMemoryTasksManagerTest {
     InMemoryTasksManager inMemory = new InMemoryTasksManager();
-    // если переменные объявлять и присваивать им значение внутри метода с аннотацией BeforeEach, они будут недоступны.
-    // если делать для них отдельный класс, то это ухудшит читаемость тестов: нужно обращаться к методу одного класса и
-    // передавать в него значение другого класса. ошибки придется искать в двух классах.
-    // пока остановился на таком варианте, хоть он и занимает больше строчек
+    // Если переменные объявлять и присваивать им значение внутри метода с аннотацией BeforeEach, они будут недоступны.
+    // Если делать для них отдельный класс, то это ухудшит читаемость тестов: нужно обращаться к методу одного класса и
+    // передавать в него значение другого класса. Ошибки придется искать в двух классах.
+    // Пока остановился на таком варианте, хоть он и занимает больше строчек
     static Task task, task2, task3;
     static Epic epic, epic2;
     static Subtask subtask, subtask1, subtask2, subtask3, subtask4;
@@ -45,8 +45,7 @@ class InMemoryTasksManagerTest {
         final Task savedTask = inMemory.findTaskById(1);
         assertNotNull(savedTask, "задача не найдена");
         assertEquals(savedTask, task, "задачи не совпадают");
-        assertNull(inMemory.createTask(task2), "задача в занятом промежутке времени");
-        assertNull(inMemory.createTask(task3), "две задачи с одним id");
+
         assertEquals(1, inMemory.history().size(), "пустая история просмотров");
         inMemory.deleteTask(task.getId());
         assertNull(inMemory.findTaskById(task.getId()), "задача не была удалена");
@@ -61,7 +60,7 @@ class InMemoryTasksManagerTest {
         assertNotNull(savedEpic, "эпик не найден");
         assertEquals(savedEpic, epic, "эпики не совпадают");
         assertNotNull(inMemory.findAllEpics(), "пустой список эпиков");
-        assertNull(inMemory.createEpic(epic2), "два эпика с одним id");
+
         assertEquals(1, inMemory.history().size(), "пустая история просмотров");
         inMemory.deleteEpic(epic.getId());
         assertNull(inMemory.findEpicById(epic.getId()), "эпик не был удален");
@@ -76,9 +75,7 @@ class InMemoryTasksManagerTest {
         final Subtask savedSubtask = inMemory.findSubtaskById(21);
         assertNotNull(savedSubtask, "подзадача не найдена");
         assertEquals(savedSubtask, subtask, "подзадачи не равны");
-        assertNull(inMemory.createSubtask(subtask2), "подзадача в занятом промежутке времени");
-        assertNull(inMemory.createSubtask(subtask3), "две подзадачи с одним id");
-        assertNull(inMemory.createSubtask(subtask4), "создана подзадача без эпика");
+
         inMemory.findSubtaskById(21);   // проверка дублирования в истории задач
         assertEquals(1, inMemory.history().size(), "0: пустая история просмотров. 2: дублирование");
         inMemory.deleteSubtask(21);
@@ -94,7 +91,7 @@ class InMemoryTasksManagerTest {
         assertNotNull(inMemory.findAllTasks(), "задача не найдена");
     }
 
-    // проверка метода поисква всех эпиков
+    // проверка метода поиска всех эпиков
     @Test
     void findAllEpics() {
         assertEquals(0, inMemory.findAllEpics().size(), "найдены эпики");
@@ -135,7 +132,7 @@ class InMemoryTasksManagerTest {
         inMemory.updateEpic(epic22);
         assertEquals(inMemory.findEpicById(11), epic22, "эпик не обновлён");
         Epic epic2222 = new Epic("epic22", "-", 1111, Status.DONE);
-        assertNull(inMemory.updateEpic(epic2222), "обновлён несуществующий эпик");
+
     }
 
     @Test

@@ -5,6 +5,7 @@ import com.sun.net.httpserver.HttpServer;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -126,12 +127,12 @@ public class KVServer {
     }
 
     protected String readText(HttpExchange h) throws IOException {
-        return new String(h.getRequestBody().readAllBytes(), "UTF-8");
+        return new String(h.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
     }
 
     protected void sendText(HttpExchange h, String text) throws IOException {
         //byte[] resp = jackson.writeValueAsBytes(obj);
-        byte[] resp = text.getBytes("UTF-8");
+        byte[] resp = text.getBytes(StandardCharsets.UTF_8);
         h.getResponseHeaders().add("Content-Type", "application/json");
         h.sendResponseHeaders(200, resp.length);
         h.getResponseBody().write(resp);

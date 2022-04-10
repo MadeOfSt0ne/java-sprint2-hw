@@ -1,6 +1,0 @@
-id,type,name,status,description,epicId
-111,TASK,task,NEW,task111,0
-333,EPIC,epic,NEW,epic333,0
-222,SUBTASK,subtask,IN_PROGRESS,subtask222,333
-
-222,333,111,

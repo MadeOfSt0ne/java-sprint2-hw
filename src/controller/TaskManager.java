@@ -22,17 +22,17 @@ public interface TaskManager {
     // получение эпика по id
     Epic findEpicById(Integer id);
     // создание новой задачи
-    Task createTask(Task task);
+    void createTask(Task task);
     // создание новой подзадачи
-    Subtask createSubtask(Subtask task);
+    void createSubtask(Subtask task);
     // создание нового эпика
-    Epic createEpic(Epic task);
+    void createEpic(Epic task);
     // обновление задачи
-    Task updateTask(Task changedTask);
+    void updateTask(Task changedTask);
     // обновление подзадачи
-    Subtask updateSubtask(Subtask changedSubtask);
+    void updateSubtask(Subtask changedSubtask);
     // обновление эпика
-    Epic updateEpic(Epic changedEpic);
+    void updateEpic(Epic changedEpic);
     // вычисление статуса
     Status findEpicStatus(Epic epic);
     // удаление по id

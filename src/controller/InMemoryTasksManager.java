@@ -9,9 +9,9 @@ import java.time.LocalTime;
 import java.util.*;
 
 public class InMemoryTasksManager implements TaskManager {
-    HashMap<Integer, Task> tasks = new HashMap<>();
-    HashMap<Integer, Subtask> subtasks = new HashMap<>();
-    HashMap<Integer, Epic> epics = new HashMap<>();
+    public HashMap<Integer, Task> tasks = new HashMap<>();
+    public HashMap<Integer, Subtask> subtasks = new HashMap<>();
+    public HashMap<Integer, Epic> epics = new HashMap<>();
     InMemoryHistoryManager history = new InMemoryHistoryManager();
     TreeMap<LocalTime, Integer> epicTimeTracker = new TreeMap<>();
     TreeMap<LocalTime, Integer> timeTracker = new TreeMap<>();
@@ -33,6 +33,8 @@ public class InMemoryTasksManager implements TaskManager {
     public List<Task> findAllSubtasks(Epic epic) {
         return epics.get(epic.getId()).getSubtasks();
     }
+
+    public List<Task> getAllSubtasks() { return new ArrayList<>(subtasks.values()); }
 
     // получение задачи по id
     @Override
@@ -72,50 +74,50 @@ public class InMemoryTasksManager implements TaskManager {
 
     // создание новой задачи с проверкой доступности времени
     @Override
-    public Task createTask(Task task) {
+    public void createTask(Task task) {
         Task value = new Task(task.getName(), task.getDescription(), task.getId(),
                 task.getStatus(), task.getStartTime(), task.getDuration());
         if (!isVacantTime(task.getStartTime(), task.getDuration())) {
             System.out.println("Это время уже занято другой задачей!");
-            return null;
+            return;
         }
         if (tasks.containsKey(task.getId())) {
             System.out.println("Такая задача уже есть: " + task.getId());
-            return null;
+            return;
         }
         tasks.put(task.getId(), value);
         history.add(task);
-        return value;
+
     }
 
     // создание нового эпика
     @Override
-    public Epic createEpic(Epic epic) {
+    public void createEpic(Epic epic) {
         Epic value = new Epic(epic.getName(), epic.getDescription(), epic.getId(),
                 epic.getStatus());
         if (epics.containsKey(epic.getId())) {
             System.out.println("Такой эпик уже есть: " + epic.getId());
-            return null;
+            return;
         }
         epics.put(epic.getId(), value);
         history.add(epic);
-        return value;
+
     }
 
     // создание новой подзадачи с проверкой доступности времени
     @Override
-    public Subtask createSubtask(Subtask task) {
+    public void createSubtask(Subtask task) {
         if (!epics.containsKey(task.getEpicId())) {
             System.out.println("Эпик не найден: " + (task.getEpicId()));
-            return null;
+            return;
         }
         if (!isVacantTime(task.getStartTime(), task.getDuration())) {
             System.out.println("Это время уже занято другой задачей!");
-            return null;
+            return;
         }
         if (subtasks.containsKey(task.getId())) {
             System.out.println("Такая подзадача уже есть: " + task.getId());
-            return null;
+            return;
         }
         Subtask value = new Subtask(task.getName(), task.getDescription(), task.getId(), task.getStatus(),
                     task.getEpicId(), task.getStartTime(), task.getDuration());
@@ -123,58 +125,58 @@ public class InMemoryTasksManager implements TaskManager {
             Epic epic = epics.get(task.getEpicId());
             epic.addSubtask(task);
             history.add(task);
-            return value;
+
     }
 
     // обновление задачи с проверкой доступности времени
     @Override
-    public Task updateTask(Task changedTask) {
+    public void updateTask(Task changedTask) {
         Task savedTask = tasks.get(changedTask.getId());
         if (!isVacantTime(changedTask.getStartTime(), changedTask.getDuration())) {
             System.out.println("Это время уже занято другой задачей!");
-            return null;
+            return;
         }
         if (savedTask == null) {
-            return null;
+            return;
         }
         savedTask.setName(changedTask.getName());
         savedTask.setDescription(changedTask.getDescription());
         savedTask.setStatus(changedTask.getStatus());
         savedTask.setStartTime(changedTask.getStartTime());
         savedTask.setDuration(changedTask.getDuration());
-        return savedTask;
+
     }
 
     // обновление подзадачи с проверкой доступности времени
     @Override
-    public Subtask updateSubtask(Subtask changedSubtask) {
+    public void updateSubtask(Subtask changedSubtask) {
         Subtask savedSubtask = subtasks.get(changedSubtask.getId());
         if (!isVacantTime(changedSubtask.getStartTime(), changedSubtask.getDuration())) {
             System.out.println("Это время уже занято другой задачей!");
-            return null;
+            return;
         }
         if (savedSubtask == null) {
-            return null;
+            return;
         }
         savedSubtask.setName(changedSubtask.getName());
         savedSubtask.setDescription(changedSubtask.getDescription());
         savedSubtask.setStatus(changedSubtask.getStatus());
         savedSubtask.setStartTime(changedSubtask.getStartTime());
         savedSubtask.setDuration(changedSubtask.getDuration());
-        return savedSubtask;
+
     }
 
     // обновление эпика
     @Override
-    public Epic updateEpic(Epic changedEpic) {
+    public void updateEpic(Epic changedEpic) {
         Epic savedEpic = epics.get(changedEpic.getId());
         if (savedEpic == null) {
-            return null;
+            return;
         }
         savedEpic.setName(changedEpic.getName());
         savedEpic.setDescription(changedEpic.getDescription());
         savedEpic.setStatus(changedEpic.getStatus());
-        return savedEpic;
+
     }
 
     // метод для вычисления статуса
