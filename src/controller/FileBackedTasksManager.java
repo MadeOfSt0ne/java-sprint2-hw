@@ -1,5 +1,6 @@
 package controller;
 
+import exceptions.ManagerSaveException;
 import model.Epic;
 import model.Status;
 import model.Subtask;
@@ -12,7 +13,7 @@ import java.util.List;
 public class FileBackedTasksManager extends InMemoryTasksManager {
     List<Task> historyList = new ArrayList<>();
     InMemoryHistoryManager historyManager = new InMemoryHistoryManager();
-
+    File file = new File(".src/resources/history.csv");
     public FileBackedTasksManager(File file) {
     }
 
@@ -70,8 +71,8 @@ public class FileBackedTasksManager extends InMemoryTasksManager {
             sb.append("\n");
             sb.append(toString(history));
             writer.write(sb.toString());
-        } catch (FileNotFoundException ex) {
-            ex.printStackTrace();
+        } catch (IOException e) {
+            throw new ManagerSaveException("Ошибка записи!");
         }
     }
 
@@ -88,7 +89,7 @@ public class FileBackedTasksManager extends InMemoryTasksManager {
     // метод добавляет id просмотренных задач в файл
     // в ТЗ про такой метод ничего нет, но раз уж он написан и работает, то пусть пока остается
     /*public void saveId(Integer id) throws ManagerSaveException {
-        try (FileWriter writer = new FileWriter("history.csv", true)) {
+        try (FileWriter writer = new FileWriter("resources/history.csv", true)) {
              writer.write(String.valueOf(id));
              writer.write(",");
         } catch (IOException e) {
@@ -97,7 +98,7 @@ public class FileBackedTasksManager extends InMemoryTasksManager {
     }*/
 
     // метод считывает строки из файла, вызывает вспомогательный метод для превращения строки в задачу (если строка
-    // содержит данные о задаче) и добавляет задачу в историю
+    // содержит данные о задаче) и добавляет задачу в историю. В случае ошибки возвращает null
     public static FileBackedTasksManager loadFromFile(File file) {
         FileBackedTasksManager manager = new FileBackedTasksManager(file);
         try {
@@ -109,8 +110,9 @@ public class FileBackedTasksManager extends InMemoryTasksManager {
             }
             return manager;
         } catch (IOException e) {
-            return manager;
+            e.printStackTrace();
         }
+        return null;
     }
 
     // метод парсит строку и возвращает её в виде задачи
@@ -118,23 +120,24 @@ public class FileBackedTasksManager extends InMemoryTasksManager {
         String[] split = str.split(",");
         try {
             Integer taskId = Integer.parseInt(split[0]);
-            String taskName = split[2];
-            String taskDescription = split[4];
-            Status taskStatus = Status.valueOf(split[3]);
-            if (Integer.parseInt(split[5]) == 0) {
+            String taskName = split[1];
+            String taskDescription = split[3];
+            Status taskStatus = Status.valueOf(split[2]);
+            if (Integer.parseInt(split[4]) == 0) {
                 return new Task(taskName, taskDescription, taskId, taskStatus);
             } else {
                 Integer epicId = Integer.parseInt(split[5]);
                 return new Subtask(taskName, taskDescription, taskId, taskStatus, epicId);
             }
         } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
-            return null;
+            e.printStackTrace();
         }
+        return null;
     }
 
     // метод для строкового отображения задачи в формате "ид,тип,имя,статус,описание,эпик id"
     public String asString(Task task) {
-        return String.format("%d,%s,%s,%s,%s,%d", task.getId(), task.getTaskType(), task.getName()
+        return String.format("%d,%s,%s,%s,%d", task.getId(), task.getName()
                 , task.getStatus(), task.getDescription(), task.getEpicId());
     }
 
@@ -209,6 +212,10 @@ public class FileBackedTasksManager extends InMemoryTasksManager {
       save();
     }
 
+    @Override
+    public void deleteEpic(Integer id) {
+        super.deleteEpic(id);
+    }
     // метод для создания новой истории задач на основе данных файла
     void addToHistory(Task task) {
         if (task == null) {

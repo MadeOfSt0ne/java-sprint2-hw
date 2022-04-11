@@ -31,7 +31,7 @@ class FileBackedTasksManagerTest {
 
     @Test
     void loadFromFile() throws IOException {
-        File file = new File("history.csv");
+        File file = new File("resources/history.csv");
         // удаляем файл перед каждым запуском теста, иначе старые результаты будут мешать
         Files.deleteIfExists(Path.of(file.getPath()));
         // считывание из пустого файла - пустая история

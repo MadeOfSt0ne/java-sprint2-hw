@@ -14,12 +14,12 @@ import java.util.Map;
  */
 public class KVServer {
     public static final int PORT = 8078;
-    private final String API_KEY;
+    private final String API_KEY = "MY_KEY";
     private HttpServer server;
     private Map<String, String> data = new HashMap<>();
 
     public KVServer() throws IOException {
-        API_KEY = generateApiKey();
+        //API_KEY = generateApiKey();
         server = HttpServer.create(new InetSocketAddress("localhost", PORT), 0);
         server.createContext("/register", (h) -> {
             try {
@@ -136,5 +136,9 @@ public class KVServer {
         h.getResponseHeaders().add("Content-Type", "application/json");
         h.sendResponseHeaders(200, resp.length);
         h.getResponseBody().write(resp);
+    }
+
+    public void clearData() {
+        data.clear();
     }
 }

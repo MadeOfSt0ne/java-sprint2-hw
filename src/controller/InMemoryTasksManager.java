@@ -41,7 +41,7 @@ public class InMemoryTasksManager implements TaskManager {
     public Task findTaskById(Integer id) {
         Task task = tasks.get(id);
         if (task == null) {
-            System.out.print("task not found: ");
+            System.out.print("task not found: " + id);
             return null;
         }
         history.add(task);
@@ -53,7 +53,7 @@ public class InMemoryTasksManager implements TaskManager {
     public Subtask findSubtaskById(Integer id) {
         Subtask subtask = subtasks.get(id);
         if (subtask == null) {
-            System.out.print("subtask not found: ");
+            System.out.print("subtask not found: " + id);
             return null;
         }
         history.add(subtask);
@@ -65,7 +65,7 @@ public class InMemoryTasksManager implements TaskManager {
     public Epic findEpicById(Integer id) {
         Epic epic = epics.get(id);
         if (epic == null) {
-            System.out.print("epic not found: ");
+            System.out.print("epic not found: " + id);
             return null;
         }
         history.add(epic);

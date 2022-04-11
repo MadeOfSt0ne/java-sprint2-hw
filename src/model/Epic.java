@@ -3,7 +3,7 @@ package model;
 import java.util.ArrayList;
 
 public class Epic extends Task {
-    private TaskType taskType;
+    //private TaskType taskType;
     private ArrayList<Task> subtasks = new ArrayList<>();
 
     // эпик создается без заданного времени начала, времени окончания и продолжительности: они вычисляются на основе подзадач
@@ -19,10 +19,10 @@ public class Epic extends Task {
         return subtasks;
     }
 
-    @Override
+    /*@Override
     public TaskType getTaskType() {
         return taskType.EPIC;
-    }
+    }*/
 
     @Override
     public String toString() {

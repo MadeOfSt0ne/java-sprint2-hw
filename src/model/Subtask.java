@@ -4,14 +4,14 @@ import java.time.LocalTime;
 
 public class Subtask extends Task {
     private Integer epicId;
-    private TaskType taskType;
+    //private TaskType taskType;
 
     public Subtask(String name, String description, Integer id, Status status, Integer epicId, LocalTime startTime, int duration) {
         super(name, description, id, status, startTime, duration);
         this.epicId = epicId;
     }
 
-    public Subtask(String name, String description, int id, Status status, int epicId) {
+    public Subtask(String name, String description, Integer id, Status status, Integer epicId) {
         super(name, description, id, status);
         this.epicId = epicId;
     }
@@ -25,10 +25,10 @@ public class Subtask extends Task {
         this.epicId = epicId;
     }
 
-    @Override
+    /*@Override
     public TaskType getTaskType() {
         return taskType.SUBTASK;
-    }
+    }*/
 
     @Override
     public String toString() {
