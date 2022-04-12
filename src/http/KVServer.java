@@ -14,16 +14,24 @@ import java.util.Map;
  */
 public class KVServer {
     public static final int PORT = 8078;
-    private final String API_KEY = "MY_KEY";
+    private final String API_KEY;
     private HttpServer server;
     private Map<String, String> data = new HashMap<>();
 
+    // Добрый день! Разбил на отдельные методы. Просто нам дали KVServer в таком виде и нужно было дописать обработку
+    // для load.
     public KVServer() throws IOException {
-        //API_KEY = generateApiKey();
+        API_KEY = generateApiKey();
         server = HttpServer.create(new InetSocketAddress("localhost", PORT), 0);
-        server.createContext("/register", (h) -> {
-            try {
-                System.out.println("\n/register");
+        server.createContext("/register", this::registerToKv);
+        server.createContext("/save", this::saveToKv);
+        server.createContext("/load", this::loadFromKv);
+        }
+
+    // метод для регистрации на сервере
+    private void registerToKv(HttpExchange h) throws IOException {
+        try {
+            System.out.println("\n/register");
                 switch (h.getRequestMethod()) {
                     case "GET":
                         sendText(h, API_KEY);
@@ -32,13 +40,14 @@ public class KVServer {
                         System.out.println("/register ждёт GET-запрос, а получил " + h.getRequestMethod());
                         h.sendResponseHeaders(405, 0);
                 }
-            } finally {
-                h.close();
-            }
-        });
-        server.createContext("/save", (h) -> {
-            try {
-                System.out.println("\n/save");
+        } finally {
+            h.close();
+        }
+    }
+
+    private void saveToKv(HttpExchange h) throws IOException {
+        try {
+            System.out.println("\n/save");
                 if (!hasAuth(h)) {
                     System.out.println("Запрос неавторизован, нужен параметр в query API_KEY со значением апи-ключа");
                     h.sendResponseHeaders(403, 0);
@@ -66,13 +75,14 @@ public class KVServer {
                         System.out.println("/save ждёт POST-запрос, а получил: " + h.getRequestMethod());
                         h.sendResponseHeaders(405, 0);
                 }
-            } finally {
-                h.close();
-            }
-        });
-        server.createContext("/load", (h) -> {
-            try {
-                System.out.println("\n/load");
+        } finally {
+            h.close();
+        }
+    }
+
+    private void loadFromKv(HttpExchange h) throws IOException {
+        try {
+            System.out.println("\n/load");
                 if (!hasAuth(h)) {
                     System.out.println("Запрос неавторизован, нужен параметр в query API_KEY со значением апи-ключа");
                     h.sendResponseHeaders(403, 0);
@@ -99,10 +109,9 @@ public class KVServer {
                         System.out.println("/load ждёт GET-запрос, а получил: " + h.getRequestMethod());
                         h.sendResponseHeaders(405, 0);
                 }
-            } finally {
-                h.close();
-            }
-        });
+        } finally {
+            h.close();
+        }
     }
 
     public void start() {

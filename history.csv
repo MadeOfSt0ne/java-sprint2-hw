@@ -1,5 +1,0 @@
-id,type,name,status,description,epicId
-11,correctEpic,NEW,thisIsEpic1,0
-21,correctSub,DONE,description 1,11
-
-21,

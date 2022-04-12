@@ -13,7 +13,7 @@ import java.util.List;
 public class FileBackedTasksManager extends InMemoryTasksManager {
     List<Task> historyList = new ArrayList<>();
     InMemoryHistoryManager historyManager = new InMemoryHistoryManager();
-    File file = new File(".src/resources/history.csv");
+    File file = new File("src/resources/history.csv");
     public FileBackedTasksManager(File file) {
     }
 
@@ -53,7 +53,7 @@ public class FileBackedTasksManager extends InMemoryTasksManager {
 
     // метод для записи задач в csv
     protected void save() {
-        try (PrintWriter writer = new PrintWriter("history.csv")) {
+        try (PrintWriter writer = new PrintWriter(file)) {
             StringBuilder sb = new StringBuilder();
             sb.append("id,type,name,status,description,epicId\r\n");
             for (Task task : findAllTasks()) {

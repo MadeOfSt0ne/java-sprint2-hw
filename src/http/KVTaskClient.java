@@ -7,7 +7,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
 public class KVTaskClient {
-    private final String API_KEY = "MY_KEY";
+    private final String API_KEY;
     private final int PORT = 8078;
 
     // Конструктор принимает URL к серверу хранилища и регистрируется. При регистрации выдаётся ключ (API_KEY),
@@ -15,7 +15,7 @@ public class KVTaskClient {
     // Консоль в тестах выглядит так, будто клиент пытается зарегистрироваться раньше запуска сервера.
 
     public KVTaskClient() {
-        //API_KEY = registerKey();
+        API_KEY = registerKey();
     }
 
     // метод для получения АПИ ключа через регистрацию на сервере

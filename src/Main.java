@@ -91,7 +91,7 @@ public class Main {
         System.out.println("история: "+ fileBacked.history());
         // считывание из файла в строку
         System.out.print("Содержимое csv файла: ");
-        System.out.println(fileBacked.fromFile("history.csv"));
+        System.out.println(fileBacked.fromFile("src/resources/history.csv"));
         // ==================================== тесты для задач 6 спринта ============================================
         // задачи и подзадачи по времени начала
         System.out.println("Задачи и подзадачи по времени: " + inMemory.getPrioritizedTasks());

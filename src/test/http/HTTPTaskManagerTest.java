@@ -14,7 +14,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class HTTPTaskManagerTest {
 
-    // Да будут тесты))
+    // Да будут тесты)) Не могу победить создание подзадач, вылезает
+    // ошибка class model.Subtask declares multiple JSON fields named epicId. От поля epicId отказаться нельзя.
+    // Возможно нужен какой-то особый адаптер для сериализации.
 
     static HTTPTaskManager manager = new HTTPTaskManager();
     static KVServer server;
@@ -81,7 +83,6 @@ class HTTPTaskManagerTest {
         manager.createEpic(epic);
         manager.createSubtask(subtask);
         final Subtask savedSubtask = manager.findSubtaskById(21);
-        //assertNotNull(savedSubtask, "подзадача не найдена");
         assertEquals(savedSubtask, subtask, "подзадачи не равны");
         manager.findSubtaskById(21);   // проверка дублирования в истории задач
         assertEquals(3, manager.history().size(), "0: пустая история просмотров. 2: дублирование");
