@@ -1,6 +1,5 @@
 package model;
 
-import java.net.InetSocketAddress;
 import java.time.LocalTime;
 
 public class Task {
@@ -74,7 +73,7 @@ public class Task {
     }
 
     public TaskType getTaskType() {
-        return taskType.TASK;
+        return TaskType.TASK;
     }
 
     public String getName() {

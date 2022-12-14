@@ -24,6 +24,7 @@ public class HTTPTaskManager extends FileBackedTasksManager {
     private List<Epic> allEpics = new ArrayList<>();
     private List<Integer> httpHistory = new ArrayList<>();
     TreeMap<LocalTime, Integer> prioritizedTasks = new TreeMap<>();
+
     public HTTPTaskManager() {
         kvTaskClient = new KVTaskClient();
     }
@@ -42,24 +43,22 @@ public class HTTPTaskManager extends FileBackedTasksManager {
     public void createSubtask(Subtask task) {
         super.createSubtask(task);
         try {
-
-        allSubs.add(task);
-        kvTaskClient.put(SUBS_KEY, gson.toJson(allSubs));
-        httpHistory.add(task.getId());
-        kvTaskClient.put(HISTORY_KEY, gson.toJson(httpHistory));
-    } catch (IllegalArgumentException e) {
+            allSubs.add(task);
+            kvTaskClient.put(SUBS_KEY, gson.toJson(allSubs));
+            httpHistory.add(task.getId());
+            kvTaskClient.put(HISTORY_KEY, gson.toJson(httpHistory));
+        } catch (IllegalArgumentException e) {
         e.printStackTrace();
-    }
+        }
     }
 
     @Override
     public void createEpic(Epic epic) {
-
-            super.createEpic(epic);
-            allEpics.add(epic);
-            httpHistory.add(epic.getId());
-            kvTaskClient.put(EPICS_KEY, gson.toJson(allEpics));
-            kvTaskClient.put(HISTORY_KEY, gson.toJson(httpHistory));
+        super.createEpic(epic);
+        allEpics.add(epic);
+        httpHistory.add(epic.getId());
+        kvTaskClient.put(EPICS_KEY, gson.toJson(allEpics));
+        kvTaskClient.put(HISTORY_KEY, gson.toJson(httpHistory));
 
     }
 
@@ -87,8 +86,9 @@ public class HTTPTaskManager extends FileBackedTasksManager {
 
     @Override
     public Task findTaskById(Integer id) {
-        try {
-            super.findTaskById(id);
+        //try {
+        super.findTaskById(id);
+        if (kvTaskClient.load(TASKS_KEY) != null) {
             List<Task> findTask = gson.fromJson(kvTaskClient.load(TASKS_KEY)
                     , new TypeToken<ArrayList<Task>>() {}.getType());
             for (Task task : findTask) {
@@ -100,11 +100,11 @@ public class HTTPTaskManager extends FileBackedTasksManager {
                     System.out.println("Задача не найдена на сервере!");
                 }
             }
-        } catch (NullPointerException e) {
-            e.printStackTrace();
+            //} catch (NullPointerException e) {
+            //  e.printStackTrace();
+            }
+            return null;
         }
-        return null;
-    }
 
     @Override
     public Subtask findSubtaskById(Integer id) {
@@ -179,8 +179,7 @@ public class HTTPTaskManager extends FileBackedTasksManager {
         super.deleteSubtask(id);
         try {
             List<Task> minusSub = gson.fromJson(kvTaskClient.load(SUBS_KEY)
-                    , new TypeToken<ArrayList<Task>>() {
-                    }.getType());
+                    , new TypeToken<ArrayList<Task>>() {}.getType());
             minusSub.removeIf(task -> (Objects.equals(task.getId(), id)));
             kvTaskClient.put(SUBS_KEY, gson.toJson(minusSub));
             removeFromHistory(id);
@@ -193,7 +192,6 @@ public class HTTPTaskManager extends FileBackedTasksManager {
     public void deleteEpic(Integer id) {
         super.deleteEpic(id);
         try {
-
             List<Epic> minusEpic = gson.fromJson(kvTaskClient.load(EPICS_KEY)
                     , new TypeToken<ArrayList<Epic>>() {}.getType());
             minusEpic.removeIf(epic -> (Objects.equals(epic.getId(), id)));
@@ -225,7 +223,7 @@ public class HTTPTaskManager extends FileBackedTasksManager {
         kvTaskClient.put(EPICS_KEY, gson.toJson(emptyEpics));
     }
 
-    // Методы возвращают либо найденный список, либо пустой новый список. Возвращение null осложняет тестирование.
+    // Методы возвращают либо найденный список, либо пустой новый список
     @Override
     public List<Integer> history() {
         try {

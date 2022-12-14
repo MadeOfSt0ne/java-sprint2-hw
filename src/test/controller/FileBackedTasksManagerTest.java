@@ -13,11 +13,10 @@ import java.nio.file.Path;
 import java.time.LocalTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class FileBackedTasksManagerTest {
+
     FileBackedTasksManager fileBacked = new FileBackedTasksManager();
-    // не проверил методы должным образом и тесты выявили неправильную работу. пришлось фиксить.
 
     @Test
     void fromString() {
@@ -35,13 +34,15 @@ class FileBackedTasksManagerTest {
         // удаляем файл перед каждым запуском теста, иначе старые результаты будут мешать
         Files.deleteIfExists(Path.of(file.getPath()));
         // считывание из пустого файла - пустая история
-        FileBackedTasksManager zeroTasks = fileBacked.loadFromFile(file);
+        FileBackedTasksManager zeroTasks = FileBackedTasksManager.loadFromFile(file);
+        assert zeroTasks != null;
         assertEquals(0, zeroTasks.historyList.size());
         // создаем 3 задачи и восстанавливаем их из файла
         fileBacked.createTask(new Task("task", "task111", 111, Status.NEW, LocalTime.of(10, 0), 15));
         fileBacked.createEpic(new Epic("epic", "epic333", 333, Status.NEW));
         fileBacked.createSubtask(new Subtask("subtask", "subtask222", 222, Status.IN_PROGRESS, 333, LocalTime.of(11, 0), 15));
-        FileBackedTasksManager loadedManager = fileBacked.loadFromFile(file);
+        FileBackedTasksManager loadedManager = FileBackedTasksManager.loadFromFile(file);
+        assert loadedManager != null;
         assertEquals(3, loadedManager.historyList.size());
     }
 }

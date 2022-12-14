@@ -34,7 +34,9 @@ public class InMemoryTasksManager implements TaskManager {
         return epics.get(epic.getId()).getSubtasks();
     }
 
-    public List<Task> getAllSubtasks() { return new ArrayList<>(subtasks.values()); }
+    public List<Task> getAllSubtasks() {
+        return new ArrayList<>(subtasks.values());
+    }
 
     // получение задачи по id
     @Override

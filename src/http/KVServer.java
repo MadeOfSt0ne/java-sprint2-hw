@@ -10,16 +10,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Постман: https://www.getpostman.com/collections/a83b61d9e1c81c10575c
+ * Постман: <a href="https://www.getpostman.com/collections/a83b61d9e1c81c10575c">...</a>
  */
 public class KVServer {
     public static final int PORT = 8078;
     private final String API_KEY;
-    private HttpServer server;
+    private final HttpServer server;
     private Map<String, String> data = new HashMap<>();
 
-    // Добрый день! Разбил на отдельные методы. Просто нам дали KVServer в таком виде и нужно было дописать обработку
-    // для load.
     public KVServer() throws IOException {
         API_KEY = generateApiKey();
         server = HttpServer.create(new InetSocketAddress("localhost", PORT), 0);
@@ -32,14 +30,12 @@ public class KVServer {
     private void registerToKv(HttpExchange h) throws IOException {
         try {
             System.out.println("\n/register");
-                switch (h.getRequestMethod()) {
-                    case "GET":
-                        sendText(h, API_KEY);
-                        break;
-                    default:
-                        System.out.println("/register ждёт GET-запрос, а получил " + h.getRequestMethod());
-                        h.sendResponseHeaders(405, 0);
-                }
+            if ("GET".equals(h.getRequestMethod())) {
+                sendText(h, API_KEY);
+            } else {
+                System.out.println("/register ждёт GET-запрос, а получил " + h.getRequestMethod());
+                h.sendResponseHeaders(405, 0);
+            }
         } finally {
             h.close();
         }
@@ -53,28 +49,26 @@ public class KVServer {
                     h.sendResponseHeaders(403, 0);
                     return;
                 }
-                switch (h.getRequestMethod()) {
-                    case "POST":
-                        String key = h.getRequestURI().getPath().substring("/save/".length());
-                        if (key.isEmpty()) {
-                            System.out.println("Key для сохранения пустой. key указывается в пути: /save/{key}");
-                            h.sendResponseHeaders(400, 0);
-                            return;
-                        }
-                        String value = readText(h);
-                        if (value.isEmpty()) {
-                            System.out.println("Value для сохранения пустой. value указывается в теле запроса");
-                            h.sendResponseHeaders(400, 0);
-                            return;
-                        }
-                        data.put(key, value);
-                        System.out.println("Значение для ключа " + key + " успешно обновлено!");
-                        h.sendResponseHeaders(200, 0);
-                        break;
-                    default:
-                        System.out.println("/save ждёт POST-запрос, а получил: " + h.getRequestMethod());
-                        h.sendResponseHeaders(405, 0);
+            if ("POST".equals(h.getRequestMethod())) {
+                String key = h.getRequestURI().getPath().substring("/save/".length());
+                if (key.isEmpty()) {
+                    System.out.println("Key для сохранения пустой. key указывается в пути: /save/{key}");
+                    h.sendResponseHeaders(400, 0);
+                    return;
                 }
+                String value = readText(h);
+                if (value.isEmpty()) {
+                    System.out.println("Value для сохранения пустой. value указывается в теле запроса");
+                    h.sendResponseHeaders(400, 0);
+                    return;
+                }
+                data.put(key, value);
+                System.out.println("Значение для ключа " + key + " успешно обновлено!");
+                h.sendResponseHeaders(200, 0);
+            } else {
+                System.out.println("/save ждёт POST-запрос, а получил: " + h.getRequestMethod());
+                h.sendResponseHeaders(405, 0);
+            }
         } finally {
             h.close();
         }
@@ -88,27 +82,25 @@ public class KVServer {
                     h.sendResponseHeaders(403, 0);
                     return;
                 }
-                switch (h.getRequestMethod()) {
-                    case "GET":
-                        String key = h.getRequestURI().getPath().substring("/load/".length());
-                        if (key.isEmpty()) {
-                            System.out.println("Key для поиска пустой. key указывается в пути: /load/{key}");
-                            h.sendResponseHeaders(400, 0);
-                            return;
-                        }
-                        if (!data.containsKey(key)) {
-                            System.out.println("Ключ " + key + " не найден.");
-                            h.sendResponseHeaders(404, 0);
-                            return;
-                        }
-                        sendText(h, data.get(key));
-                        System.out.println("Значение для ключа " + key + " успешно найдено!");
-                        h.sendResponseHeaders(200, 0);
-                        break;
-                    default:
-                        System.out.println("/load ждёт GET-запрос, а получил: " + h.getRequestMethod());
-                        h.sendResponseHeaders(405, 0);
+            if ("GET".equals(h.getRequestMethod())) {
+                String key = h.getRequestURI().getPath().substring("/load/".length());
+                if (key.isEmpty()) {
+                    System.out.println("Key для поиска пустой. key указывается в пути: /load/{key}");
+                    h.sendResponseHeaders(400, 0);
+                    return;
                 }
+                if (!data.containsKey(key)) {
+                    System.out.println("Ключ " + key + " не найден.");
+                    h.sendResponseHeaders(404, 0);
+                    return;
+                }
+                sendText(h, data.get(key));
+                System.out.println("Значение для ключа " + key + " успешно найдено!");
+                h.sendResponseHeaders(200, 0);
+            } else {
+                System.out.println("/load ждёт GET-запрос, а получил: " + h.getRequestMethod());
+                h.sendResponseHeaders(405, 0);
+            }
         } finally {
             h.close();
         }

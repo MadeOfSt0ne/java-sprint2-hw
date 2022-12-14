@@ -12,44 +12,14 @@ import java.util.List;
 
 public class FileBackedTasksManager extends InMemoryTasksManager {
     List<Task> historyList = new ArrayList<>();
-    InMemoryHistoryManager historyManager = new InMemoryHistoryManager();
     File file = new File("src/resources/history.csv");
+
     public FileBackedTasksManager(File file) {
+        this.file = file;
     }
 
     public FileBackedTasksManager() {
     }
-
-    // громоздкий, но рабочий метод для сохранения задач в файл csv
-   /* public void save1() {
-        try {
-            StringBuilder tasksToSave = new StringBuilder();
-            tasksToSave.append("id,type,name,status,description");
-            tasksToSave.append("\n");
-            // запись задач, подзадач и эпиков (хранятся в 3х мапах)
-            for (Task task : tasks.values()) {
-                tasksToSave.append(asString(task));
-                tasksToSave.append("\n");
-            }
-            for (Task task : subtasks.values()) {
-                tasksToSave.append(asString(task));
-                tasksToSave.append("\n");
-            }
-            for (Task task : epics.values()) {
-                tasksToSave.append(asString(task));
-                tasksToSave.append("\n");
-            }
-            tasksToSave.append("\n");
-
-            try (FileWriter writer = new FileWriter("history1.csv")) {
-                writer.write(String.valueOf(tasksToSave));
-            } catch (IOException e) {
-                throw new ManagerSaveException("ошибка ввода/вывода: " + e.getMessage());
-            }
-        } catch (ManagerSaveException e) {
-            System.out.println(e.getMessage());
-        }
-    }*/
 
     // метод для записи задач в csv
     protected void save() {
@@ -216,6 +186,7 @@ public class FileBackedTasksManager extends InMemoryTasksManager {
     public void deleteEpic(Integer id) {
         super.deleteEpic(id);
     }
+
     // метод для создания новой истории задач на основе данных файла
     void addToHistory(Task task) {
         if (task == null) {
